@@ -26,7 +26,7 @@ class Command(BaseCommand):
             pass
 
         if text:
-            note = Note(text=text)
+            note = Note(user_id=1, text=text)  # @fixme user_id
             note.save()
             self.stdout.write(self.style.SUCCESS('Created note %s' % note.id))
         else:
