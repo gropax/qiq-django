@@ -8,6 +8,8 @@ class Note(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     references = models.ManyToManyField('self', db_table='references', symmetrical=False,
                                         related_name='referencers')
+    rank = models.IntegerField(default=1)
+    original = models.BooleanField(default=True)
 
     def __str__(self):
         l = len(self.text)

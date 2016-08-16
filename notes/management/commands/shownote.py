@@ -16,6 +16,6 @@ class Command(BaseCommand):
         except Note.DoesNotExist:
             raise CommandError('Note "%s" does not exist' % note_id)
 
-        s = "id:  %i\ncreated at:  %s\ncontent:\n%s\n" % (note.id, note.created, note.text)
+        s = "id:  %i\ncreated at:  %s\nrank:  %i\noriginal:  %i\ncontent:\n%s\n" % (note.id, note.created, note.rank, note.original, note.text)
 
         self.stdout.write(s)

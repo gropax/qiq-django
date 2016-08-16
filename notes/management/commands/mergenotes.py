@@ -36,9 +36,16 @@ class Command(BaseCommand):
 
         # Created new note
         if text:
-            note = Note(user_id=1, text=text)  # @fixme user_id
+            rank = 0
+            for n in notes:
+                rank += n.rank
+                n.original = False
+                n.save()
+
+            note = Note(user_id=1, text=text, rank=rank)  # @fixme user_id
             note.save()
             note.references.add(*notes)
+
             self.stdout.write(self.style.SUCCESS('Created note %s' % note.id))
         else:
             exit(1)
