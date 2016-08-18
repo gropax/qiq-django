@@ -1,21 +1,11 @@
+import os
 from textwrap import TextWrapper
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from notes.models import Note
 #from argparse import FileType
 from termcolor import colored
+from ._functions import virtual_tags
 
-
-INDENT = ' ' * 4
-
-HEADERS = colored("Name            Value".ljust(60), None, attrs=['bold', 'underline'])
-TEMPLATE = """ID              %i
-User            %s
-Project         %s
-Created         %s
-Original        %s
-Previous notes  %s
-Next notes      %s
-Rank            %i"""
 
 class InfoCommand(object):
     def __init__(self, cmd):
@@ -44,26 +34,178 @@ class InfoCommand(object):
         proj = note.project
         project = proj.full_name() if proj else '-'
         created = note.created
-        fresh = True if note.original else False
+        vtags = " ".join(tag for tag in virtual_tags(note))
         prev = ",".join(str(n.id) for n in note.references.all()) or '-'
         next = ",".join(str(n.id) for n in note.referencers.all()) or '-'
         rank = note.rank
 
-        metadata_lines = [HEADERS] + (TEMPLATE % (id, username, project, created, fresh, prev, next, rank)).split('\n')
-        metadata = "\n".join(l.ljust(60) for l in metadata_lines)
+        table = Table([
+            ['Name', 'Value'],
+            ['ID', id],
+            ['Username', username],
+            ['Project', project],
+            ['Created', created],
+            ['Virtual tags', vtags],
+            ['Previous notes', prev],
+            ['Next notes', next],
+            ['Rank', rank],
+        ], headers=['bold', 'underline'], color_line='grey')
 
-        wrapper = TextWrapper(width=52)
-        content_lines = ["Content",""] + [INDENT + line for line in wrapper.wrap(note.text)]
-        content = "\n".join(l.ljust(60) for l in content_lines)
+        text = TextBlock(note.text)
+        margin = MarginBlock(text, left=4, right=4, top=1, bottom=1)
+        vlayout = VerticalLayout([table, margin])
 
-        lines = metadata.split('\n') + [content]
-        color = []
-        dark = not len(lines) % 2
-        for line in lines:
-            if dark:
-                color.append(colored(line, None, 'on_grey'))
-            else:
-                color.append(line)
-            dark = not dark
+        return vlayout.format()
 
-        return "\n".join(color) + "\n\n"
+
+class Block(object):
+    def __init__(self, **options):
+        self.options = options
+        self.parent = options.get('parent')
+
+    def width(self):
+        if not hasattr(self, '_width'):
+            self._width = self.parent.child_width(self) if self.parent else self.tty_width()
+        return self._width
+
+    def tty_width(self):
+        rows, cols = os.popen('stty size', 'r').read().split()
+        return int(cols)
+
+    def child_width(self, block):
+        return self.width()
+
+    def format(self):
+        return "\n".join(self.formated_lines())
+
+
+class VerticalLayout(Block):
+    def __init__(self, blocks, **options):
+        super(VerticalLayout, self).__init__(**options)
+        self.blocks = blocks
+
+    def formated_lines(self):
+        return sum((blk.formated_lines() for blk in self.blocks), [])
+
+
+class TextBlock(Block):
+    def __init__(self, text, **options):
+        super(TextBlock, self).__init__(**options)
+        self.text = text
+
+    def formated_lines(self):
+        wrapper = TextWrapper(width=self.width())
+        return wrapper.wrap(self.text)
+
+
+FILLING_CHAR = ' '
+
+class MarginBlock(Block):
+    def __init__(self, block, **options):
+        super(MarginBlock, self).__init__(**options)
+
+        self.child = block
+        block.parent = self
+
+        self.margin = {
+            'left': options.get('left', 0),
+            'right': options.get('right', 0),
+            'top': options.get('top', 0),
+            'bottom': options.get('bottom', 0),
+        }
+
+    def child_width(self, block):
+        width = self.width() - self.margin['left'] - self.margin['right']
+        return max(width, 0)
+
+    def formated_lines(self):
+        top = [FILLING_CHAR * self.width()] * self.margin['top']
+        bottom = [FILLING_CHAR * self.width()] * self.margin['bottom']
+        middle = [FILLING_CHAR * self.margin['left'] + line +
+                  FILLING_CHAR * self.margin['right'] for line in self.child.formated_lines()]
+        return top + middle + bottom
+
+
+COL_SEPARATOR = ' '
+
+class Table(Block):
+    def __init__(self, data, **options):
+        super(Table, self).__init__(**options)
+        self.data = [[str(cell) for cell in line] for line in data]
+        self.colnos = self.columns_number(data)
+
+    def formated_lines(self):
+        col_len = self.columns_length(self.data)
+        tot_w = sum(col_len) + (self.colnos - 1) * len(COL_SEPARATOR)
+        tab_w = self.width()
+
+        if tot_w > tab_w:
+            widest, max_l = None, 0
+            for i, l in enumerate(col_len):
+                if l >= max_l:
+                    max_l, widest = l, i
+
+            new_l = max_l + tab_w - tot_w
+            col_len[widest] = new_l
+            wrapper = TextWrapper(width=new_l)
+
+            rows = []
+            for row in self.data:
+                widest_cell = row[widest]
+                wrapped = wrapper.wrap(widest_cell)
+                lineno = len(wrapped)
+
+                lines = []
+                for i in range(lineno):
+                    line = []
+                    for j, cell in enumerate(row):
+                        if j == widest:
+                            line.append(wrapped[i].ljust(new_l))
+                        else:
+                            cell_line = cell if i == 0 else ''
+                            line.append(cell_line.ljust(col_len[j]))
+                    lines.append(line)
+
+                rows.append(lines)
+        else:
+            # Widen the right-most column to fill the available width
+            if tot_w < tab_w:
+                col_len[-1] = col_len[-1] + tab_w - tot_w
+
+            rows = []
+            for row in self.data:
+                line = []
+                for i, cell in enumerate(row):
+                    line.append(cell.ljust(col_len[i]))
+                rows.append([line])
+
+        headers = self.options.get('headers')
+        if headers:
+            rows[0] = [[colored(cell_line, attrs=headers) for cell_line in lines] for lines in rows[0]]
+
+        formated_rows = ["".join(COL_SEPARATOR.join(cell_line for cell_line in line)
+                            for line in row) for row in rows]
+
+        color_line = self.options.get('color_line')
+        if color_line:
+            color = "on_%s" % color_line
+            colored_rows = []
+            for i, row in enumerate(formated_rows):
+                if i % 2:
+                    colored_rows.append(colored(row, None, color))
+                else:
+                    colored_rows.append(row)
+            formated_rows = colored_rows
+
+        return "\n".join(formated_rows).split('\n')  # @fixme ugly
+
+    def columns_length(self, data):
+        col_len = [0] * self.colnos
+        for line in self.data:
+            for i, cell in enumerate(line):
+                if len(cell) > col_len[i]:
+                    col_len[i] = len(cell)
+        return col_len
+
+    def columns_number(self, data):
+        return len(data[1])
