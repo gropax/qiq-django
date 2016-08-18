@@ -1,18 +1,16 @@
-import os
 from django.core.management.base import BaseCommand, CommandParser, CommandError
-from argparse import FileType
-from ._functions import parse_project_name, get_or_create_project, get_project, create_note
+from notes.models import Note
+from ._functions import merge_notes
 from ._notes_cmd import NoteCommand
 
 
-class NewCommand(NoteCommand):
+class MergeCommand(NoteCommand):
     def add_arguments(self, parser):
-        input_grp = parser.add_mutually_exclusive_group()
+        parser.add_argument('filters', nargs='+', type=str,
+                            help='filters used to select the notes')
         #input_grp.add_argument('-e', '--editor', type=str,
                                 #default='vim % -u NONE -c startinsert',
                                 #help='the command used to open the editor')
-        input_grp.add_argument('-f', '--infile', type=FileType('r'),
-                                help='the file containing the text of the note')
 
         proj_grp = parser.add_mutually_exclusive_group()
         proj_grp.add_argument('-p', '--project', type=str,
@@ -23,18 +21,22 @@ class NewCommand(NoteCommand):
                                 help='create the project if it doesn\'t exist')
 
     def execute(self, args, options):
+        q = self.filter_query(options['filters'])
+        notes = Note.objects.filter(**q).all()
+
+        if not notes.all():
+            self.notify_empty_set()
+
         proj = self.get_or_prompt_project(options)
 
-        if options['infile']:
-            f = options['infile']
-        else:
-            f = self.edit_note_in_editor(options)
+        text = "\n\n".join(note.text for note in notes)
+        f = self.edit_note_in_editor(options, text=text)
 
         with open(f, 'r') as file:
             text = file.read()
 
         if text:
-            note = create_note(proj, text)
+            note = merge_notes(proj, text, notes)
             self.notify_creation(note)
         else:
             exit(1)

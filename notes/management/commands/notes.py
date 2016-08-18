@@ -4,6 +4,7 @@ from ._notes_new import NewCommand
 from ._notes_info import InfoCommand
 from ._notes_delete import DeleteCommand
 from ._notes_list import ListCommand
+from ._notes_merge import MergeCommand
 
 
 def parser_class(cmd):
@@ -19,6 +20,7 @@ SUBCOMMANDS = {
     'info': InfoCommand,
     'delete': DeleteCommand,
     'list': ListCommand,
+    'merge': MergeCommand,
 }
 class Command(BaseCommand):
     help = 'Manage notes'

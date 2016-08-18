@@ -39,6 +39,18 @@ def create_note(proj, text):
     note.save()
     return note
 
+def merge_notes(proj, text, notes):
+    rank = 0
+    for n in notes:
+        rank += n.rank
+        n.original = False
+        n.save()
+
+    note = Note(user_id=1, project=proj, text=text, rank=rank)
+    note.save()
+    note.references.add(*notes)
+    return note
+
 def virtual_tags(note):
     tags = []
     if note.original: tags.append('ORIGINAL')

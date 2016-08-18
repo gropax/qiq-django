@@ -14,13 +14,14 @@ class ListCommand(NoteCommand):
     def execute(self, args, options):
         q = self.filter_query(options['filters'])
         notes = Note.objects.filter(**q).all()
+
+        if not notes.all():
+            self.notify_empty_set()
+
         output = self.format(notes)
         self.cmd.stdout.write(output)
 
     def format(self, notes):
-        if not notes.all():
-            self.notify_empty_set()
-
         headers = ['ID', 'Age', 'Project', 'Og', 'Rk', 'Text']
         lines = [headers]
         for note in notes:

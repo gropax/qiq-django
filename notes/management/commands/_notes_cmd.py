@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 import re
 import pytz
+import subprocess
+import tempfile
 from datetime import datetime
 from notes.models import Note, Project
 from ._functions import parse_project_name, filter_query, get_project
@@ -51,6 +53,22 @@ class NoteCommand(object):
         s = "No matches."
         self.cmd.stdout.write(self.cmd.style.ERROR(s))
         exit(1)
+
+    def edit_note_in_editor(self, options, text=None):
+        _, f = tempfile.mkstemp()
+
+        # Write notes in tmp
+        if text:
+            with open(f, 'w') as tmpf:
+                tmpf.write(text)
+
+        subprocess.call(['vim', f, '-u', 'NONE', '-c', 'startinsert'])
+
+        # @fixme Use custom editor command
+        #cmd = options['editor'].replace('%', f)
+        #subprocess.call(cmd)
+
+        return f
 
     def get_or_prompt_project(self, options):
         if options['no_project']:
@@ -107,7 +125,7 @@ class NoteCommand(object):
             if proj:
                 q['project'] = proj
             else:
-                self.cmd.stderr.write(self.cmd.style.ERROR("Unknown project `%s`" % project.full_name()))
+                self.cmd.stderr.write(self.cmd.style.ERROR("Unknown project `%s`" % proj_name))
                 exit(1)
 
         if 'ORIGINAL' in vtags:
