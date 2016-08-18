@@ -50,11 +50,6 @@ class NoteCommand(Subcommand):
         s = "Note %s doesn't exist" % id
         self.cmd.stdout.write(self.cmd.style.ERROR(s))
 
-    def notify_empty_set(self):
-        s = "No matches."
-        self.cmd.stdout.write(self.cmd.style.ERROR(s))
-        exit(1)
-
     def edit_note_in_editor(self, options, text=None):
         _, f = tempfile.mkstemp()
 

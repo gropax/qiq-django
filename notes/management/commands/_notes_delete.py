@@ -14,7 +14,7 @@ class DeleteCommand(NoteCommand):
         if no:
             self.notify_deleted(no)
         else:
-            self.notify_empty_set()
+            self.notify_no_match()
 
     def notify_deleted(self, n):
         notes = 'note' if n == 1 else 'notes'

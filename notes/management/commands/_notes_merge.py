@@ -25,7 +25,7 @@ class MergeCommand(NoteCommand):
         notes = Note.objects.filter(**q).all()
 
         if not notes.all():
-            self.notify_empty_set()
+            self.notify_no_match()
 
         proj = self.get_or_prompt_project(options)
 

@@ -16,7 +16,7 @@ class ListCommand(NoteCommand):
         notes = Note.objects.filter(**q).all()
 
         if not notes.all():
-            self.notify_empty_set()
+            self.notify_no_match()
 
         output = self.format(notes)
         self.cmd.stdout.write(output)
