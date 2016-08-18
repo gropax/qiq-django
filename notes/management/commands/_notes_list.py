@@ -1,4 +1,6 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
+import re
+from termcolor import colored
 from notes.models import Note
 from ._term_blocks import TableBlock
 from ._notes_cmd import NoteCommand
@@ -6,7 +8,7 @@ from ._notes_cmd import NoteCommand
 
 class ListCommand(NoteCommand):
     def add_arguments(self, parser):
-        parser.add_argument('filters', nargs='+', type=str,
+        parser.add_argument('filters', nargs='*', type=str,
                             help='filters used to select the notes')
 
     def execute(self, args, options):
@@ -19,16 +21,19 @@ class ListCommand(NoteCommand):
         if not notes.all():
             self.notify_empty_set()
 
-        headers = ['ID', 'Project', 'Rk', 'Text']
+        headers = ['ID', 'Age', 'Project', 'Og', 'Rk', 'Text']
         lines = [headers]
         for note in notes:
             id = note.id
+            age = self.note_age(note)
             proj = note.project
             project = proj.full_name() if proj else '-'
             rank = note.rank
-            text = note.text
+            text = re.sub(r'\n+', '  ', note.text)
+            original = '✓' if note.original else '✗'
+            #original = colored('✓', 'green') if note.original else colored('✗', 'red')
             #created = note.created
-            lines.append([id, project, rank, text])
+            lines.append([id, age, project, original, rank, text])
 
         table = TableBlock(lines, headers=['bold', 'underline'],
                            color_line='grey', max_line=1)

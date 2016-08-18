@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 import re
+import pytz
+from datetime import datetime
 from notes.models import Note, Project
 from ._functions import parse_project_name, filter_query, get_project
 
@@ -14,6 +16,26 @@ VTAG_re = re.compile(r'^(\+|-)([A-Z]+)$')
 class NoteCommand(object):
     def __init__(self, cmd):
         self.cmd = cmd
+
+    def note_age(self, note):
+        delta = datetime.now(pytz.utc) - note.created
+        years = delta.days // 365
+        if years:
+            return "%iy" % years
+        weeks = delta.days // 7
+        if weeks:
+            return "%iw" % weeks
+        if delta.days:
+            return "%id" % delta.days
+        hours = delta.seconds // 3600
+        if hours:
+            return "%ih" % hours
+        minutes = delta.seconds // 60
+        if minutes:
+            return "%im" % minutes
+        if delta.seconds:
+            return "%is" % delta.seconds
+        return ''
 
     def notify_creation(self, note):
         s = 'Created note %s' % note.id
