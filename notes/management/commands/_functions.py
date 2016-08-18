@@ -12,10 +12,14 @@ def get_or_create_project(name, desc=''):
         proj, created = Project.objects.get_or_create(user_id=1, parent_id=parent_id, name=name)
         parent_id = proj.id
 
-    proj.description = desc
-    proj.save()
+    if created:
+        proj.description = desc
+        proj.save()
 
-    return proj
+    return proj, created
+
+def get_all_projects():
+    return Project.objects.all()
 
 def get_project(name):
     """Return `Project` object corresponding to the given name, or `None` if

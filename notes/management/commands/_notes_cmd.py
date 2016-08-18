@@ -5,7 +5,8 @@ import subprocess
 import tempfile
 from datetime import datetime
 from notes.models import Note, Project
-from ._functions import parse_project_name, filter_query, get_project
+from ._subcommand import Subcommand
+from ._functions import parse_project_name, filter_query, get_project, get_or_create_project
 
 
 VTAGS = ['ORIGINAL']
@@ -15,7 +16,7 @@ PROJ_re = re.compile(r'^proj(?:ect)?:([a-z]+(?:\.[a-z]+)*)$')
 VTAG_re = re.compile(r'^(\+|-)([A-Z]+)$')
 
 
-class NoteCommand(object):
+class NoteCommand(Subcommand):
     def __init__(self, cmd):
         self.cmd = cmd
 
@@ -83,18 +84,20 @@ class NoteCommand(object):
                     return None
 
             if options['create_project']:
-                proj = get_or_create_project(name)
+                proj, _ = get_or_create_project(name)
             else:
                 proj = get_project(name)
                 if not proj:
                     self.cmd.stdout.write("The project `%s` doesn't exist." % name)
                     create = input('Create it ? (yes) ')
                     if create.lower() in ['', 'y', 'ye', 'yes']:
-                        proj = get_or_create_project(name)
+                        proj, _ = get_or_create_project(name)
                     else:
                         exit(1)
         return proj
 
+    # @todo Move to _functions.py
+    #
     def filter_query(self, filters):
         ids, proj_name, vtags = set(), None, {}
 
