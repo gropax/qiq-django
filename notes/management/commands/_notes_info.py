@@ -1,16 +1,12 @@
 import os
-from textwrap import TextWrapper
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from notes.models import Note
-#from argparse import FileType
-from termcolor import colored
 from ._functions import virtual_tags
+from ._term_blocks import TextBlock, TableBlock, MarginBlock, VerticalLayout
+from ._notes_cmd import NoteCommand
 
 
-class InfoCommand(object):
-    def __init__(self, cmd):
-        self.cmd = cmd
-
+class InfoCommand(NoteCommand):
     def add_arguments(self, parser):
         parser.add_argument('id', type=int, help='the ID of the note')
 
@@ -18,15 +14,11 @@ class InfoCommand(object):
         try:
             note = Note.objects.get(id=options['id'])
         except:
-            self.notify_not_found(id)
+            self.notify_not_found(options['id'])
             exit(1)
 
         output = self.format_info(note)
         self.cmd.stdout.write(output)
-
-    def notify_not_found(self, id):
-        s = "Note %s doesn't exist" % id
-        self.cmd.stdout.write(self.cmd.style.ERROR(s))
 
     def format_info(self, note):
         id = note.id
@@ -39,7 +31,7 @@ class InfoCommand(object):
         next = ",".join(str(n.id) for n in note.referencers.all()) or '-'
         rank = note.rank
 
-        table = Table([
+        table = TableBlock([
             ['Name', 'Value'],
             ['ID', id],
             ['Username', username],
@@ -56,156 +48,3 @@ class InfoCommand(object):
         vlayout = VerticalLayout([table, margin])
 
         return vlayout.format()
-
-
-class Block(object):
-    def __init__(self, **options):
-        self.options = options
-        self.parent = options.get('parent')
-
-    def width(self):
-        if not hasattr(self, '_width'):
-            self._width = self.parent.child_width(self) if self.parent else self.tty_width()
-        return self._width
-
-    def tty_width(self):
-        rows, cols = os.popen('stty size', 'r').read().split()
-        return int(cols)
-
-    def child_width(self, block):
-        return self.width()
-
-    def format(self):
-        return "\n".join(self.formated_lines())
-
-
-class VerticalLayout(Block):
-    def __init__(self, blocks, **options):
-        super(VerticalLayout, self).__init__(**options)
-        self.blocks = blocks
-
-    def formated_lines(self):
-        return sum((blk.formated_lines() for blk in self.blocks), [])
-
-
-class TextBlock(Block):
-    def __init__(self, text, **options):
-        super(TextBlock, self).__init__(**options)
-        self.text = text
-
-    def formated_lines(self):
-        wrapper = TextWrapper(width=self.width())
-        return wrapper.wrap(self.text)
-
-
-FILLING_CHAR = ' '
-
-class MarginBlock(Block):
-    def __init__(self, block, **options):
-        super(MarginBlock, self).__init__(**options)
-
-        self.child = block
-        block.parent = self
-
-        self.margin = {
-            'left': options.get('left', 0),
-            'right': options.get('right', 0),
-            'top': options.get('top', 0),
-            'bottom': options.get('bottom', 0),
-        }
-
-    def child_width(self, block):
-        width = self.width() - self.margin['left'] - self.margin['right']
-        return max(width, 0)
-
-    def formated_lines(self):
-        top = [FILLING_CHAR * self.width()] * self.margin['top']
-        bottom = [FILLING_CHAR * self.width()] * self.margin['bottom']
-        middle = [FILLING_CHAR * self.margin['left'] + line +
-                  FILLING_CHAR * self.margin['right'] for line in self.child.formated_lines()]
-        return top + middle + bottom
-
-
-COL_SEPARATOR = ' '
-
-class Table(Block):
-    def __init__(self, data, **options):
-        super(Table, self).__init__(**options)
-        self.data = [[str(cell) for cell in line] for line in data]
-        self.colnos = self.columns_number(data)
-
-    def formated_lines(self):
-        col_len = self.columns_length(self.data)
-        tot_w = sum(col_len) + (self.colnos - 1) * len(COL_SEPARATOR)
-        tab_w = self.width()
-
-        if tot_w > tab_w:
-            widest, max_l = None, 0
-            for i, l in enumerate(col_len):
-                if l >= max_l:
-                    max_l, widest = l, i
-
-            new_l = max_l + tab_w - tot_w
-            col_len[widest] = new_l
-            wrapper = TextWrapper(width=new_l)
-
-            rows = []
-            for row in self.data:
-                widest_cell = row[widest]
-                wrapped = wrapper.wrap(widest_cell)
-                lineno = len(wrapped)
-
-                lines = []
-                for i in range(lineno):
-                    line = []
-                    for j, cell in enumerate(row):
-                        if j == widest:
-                            line.append(wrapped[i].ljust(new_l))
-                        else:
-                            cell_line = cell if i == 0 else ''
-                            line.append(cell_line.ljust(col_len[j]))
-                    lines.append(line)
-
-                rows.append(lines)
-        else:
-            # Widen the right-most column to fill the available width
-            if tot_w < tab_w:
-                col_len[-1] = col_len[-1] + tab_w - tot_w
-
-            rows = []
-            for row in self.data:
-                line = []
-                for i, cell in enumerate(row):
-                    line.append(cell.ljust(col_len[i]))
-                rows.append([line])
-
-        headers = self.options.get('headers')
-        if headers:
-            rows[0] = [[colored(cell_line, attrs=headers) for cell_line in lines] for lines in rows[0]]
-
-        formated_rows = ["".join(COL_SEPARATOR.join(cell_line for cell_line in line)
-                            for line in row) for row in rows]
-
-        color_line = self.options.get('color_line')
-        if color_line:
-            color = "on_%s" % color_line
-            colored_rows = []
-            for i, row in enumerate(formated_rows):
-                if i % 2:
-                    colored_rows.append(colored(row, None, color))
-                else:
-                    colored_rows.append(row)
-            formated_rows = colored_rows
-
-        return "\n".join(formated_rows).split('\n')  # @fixme ugly
-
-    def columns_length(self, data):
-        col_len = [0] * self.colnos
-        for line in self.data:
-            for i, cell in enumerate(line):
-                if len(cell) > col_len[i]:
-                    col_len[i] = len(cell)
-        return col_len
-
-    def columns_number(self, data):
-        return len(data[1])

@@ -3,6 +3,7 @@ from argparse import FileType
 from ._notes_new import NewCommand
 from ._notes_info import InfoCommand
 from ._notes_delete import DeleteCommand
+from ._notes_list import ListCommand
 
 
 def parser_class(cmd):
@@ -17,6 +18,7 @@ SUBCOMMANDS = {
     'new': NewCommand,
     'info': InfoCommand,
     'delete': DeleteCommand,
+    'list': ListCommand,
 }
 class Command(BaseCommand):
     help = 'Manage notes'
