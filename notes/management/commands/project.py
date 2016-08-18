@@ -32,6 +32,11 @@ class Command(BaseCommand):
             cmd_parser = cmd_parsers.add_parser(cmd_str)
             cmd.add_arguments(cmd_parser)
 
+        self.parser = parser
+
     def handle(self, *args, **options):
         cmd = options['cmd']
-        self.subcmds[cmd].execute(args, options)
+        if cmd:
+            self.subcmds[cmd].execute(args, options)
+        else:
+            self.parser.print_help()
