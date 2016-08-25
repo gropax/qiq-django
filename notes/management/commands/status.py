@@ -32,17 +32,16 @@ class Command(BaseCommand):
         self.stdout.write(out)
 
     def compute_values(self, _from, to):
-        notes = Note.objects.filter(user_id=1, created__lt=to).all()
+        notes_in_span = Note.objects.filter(user_id=1, created__gt=_from, created__lt=to)
 
-        in_span = notes.filter(created__gt=_from)
-
-        rk1 = in_span.filter(rank=1)
-        rk_gt1 = in_span.filter(rank__gt=1)
+        rk1 = notes_in_span.filter(rank=1)
+        rk_gt1 = notes_in_span.filter(rank__gt=1)
 
         rk1_no = rk1.count()
         rk_gt1_no = rk_gt1.count()
 
-        dval = notes.aggregate(Avg('rank')).values()
+        original = Note.objects.filter(user_id=1, original=True)
+        dval = original.aggregate(Avg('rank')).values()
         rk_avg = list(dval)[0]
 
         return (rk1_no, rk_gt1_no, rk_avg)
