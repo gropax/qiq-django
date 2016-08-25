@@ -51,8 +51,6 @@ class ModifyCommand(ProjectCommand):
             else:
                 *parents, base_name = new_name.split('.')
                 parent_name = ".".join(parents)
-                print("parent_name: %s" % parent_name)
-                print("base_name: %s" % base_name)
 
                 if parent_name:
                     parent, _ = get_or_create_project(parent_name)
