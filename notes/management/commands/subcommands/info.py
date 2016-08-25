@@ -1,9 +1,9 @@
 import os
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from notes.models import Note
-from notes.management.commands._functions import virtual_tags
+from notes.helpers import virtual_tags
 from notes.management.commands._term_blocks import TextBlock, TableBlock, MarginBlock, VerticalLayout
-from notes.management.commands._notes_cmd import NoteCommand
+from .base import NoteCommand
 
 
 class InfoCommand(NoteCommand):

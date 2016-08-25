@@ -4,9 +4,9 @@ import pytz
 import subprocess
 import tempfile
 from datetime import datetime
-from notes.models import Note, Project
-from ._subcommand import Subcommand
-from ._functions import parse_project_name, filter_query, get_project, get_or_create_project
+from notes.models import Note
+from projects.helpers import parse_project_name, get_project, get_or_create_project
+from notes.helpers import filter_query
 
 
 VTAGS = ['ORIGINAL']
@@ -16,7 +16,7 @@ PROJ_re = re.compile(r'^proj(?:ect)?:([a-z]+(?:\.[a-z]+)*)$')
 VTAG_re = re.compile(r'^(\+|-)([A-Z]+)$')
 
 
-class NoteCommand(Subcommand):
+class NoteCommand(object):
     def __init__(self, cmd):
         self.cmd = cmd
 
@@ -49,6 +49,11 @@ class NoteCommand(Subcommand):
     def notify_not_found(self, id):
         s = "Note %s doesn't exist" % id
         self.cmd.stdout.write(self.cmd.style.ERROR(s))
+
+    def notify_no_match(self):
+        s = "No matches."
+        self.cmd.stdout.write(self.cmd.style.ERROR(s))
+        exit(1)
 
     def edit_note_in_editor(self, options, text=None):
         _, f = tempfile.mkstemp()

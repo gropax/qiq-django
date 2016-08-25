@@ -1,8 +1,8 @@
 import os
 from django.core.management.base import BaseCommand, CommandParser, CommandError
-from notes.models import Project
-from ._functions import get_project, get_or_create_project
-from ._project_cmd import ProjectCommand
+from projects.models import Project
+from projects.helpers import get_project, get_or_create_project
+from .base import ProjectCommand
 
 
 class ModifyCommand(ProjectCommand):

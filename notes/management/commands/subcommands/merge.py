@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from notes.models import Note
-from notes.management.commands._functions import merge_notes
-from notes.management.commands._notes_cmd import NoteCommand
+from notes.helpers import merge_notes
+from .base import NoteCommand
 
 
 class MergeCommand(NoteCommand):

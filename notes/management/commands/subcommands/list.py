@@ -3,7 +3,7 @@ import re
 from termcolor import colored
 from notes.models import Note
 from notes.management.commands._term_blocks import TableBlock
-from notes.management.commands._notes_cmd import NoteCommand
+from .base import NoteCommand
 
 
 class ListCommand(NoteCommand):

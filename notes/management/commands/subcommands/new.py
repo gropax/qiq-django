@@ -1,8 +1,9 @@
 import os
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from argparse import FileType
-from notes.management.commands._functions import parse_project_name, get_or_create_project, get_project, create_note
-from notes.management.commands._notes_cmd import NoteCommand
+from projects.helpers import parse_project_name, get_or_create_project, get_project
+from notes.helpers import create_note
+from .base import NoteCommand
 
 
 class NewCommand(NoteCommand):
