@@ -58,7 +58,7 @@ class NoteCommand(Subcommand):
             with open(f, 'w') as tmpf:
                 tmpf.write(text)
 
-        subprocess.call(['vim', f, '-u', 'NONE', '-c', 'startinsert'])
+        subprocess.call(['vim', f, '-c', 'startinsert'])  # '-u', 'NONE',
 
         # @fixme Use custom editor command
         #cmd = options['editor'].replace('%', f)

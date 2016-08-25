@@ -2,8 +2,8 @@ from django.core.management.base import BaseCommand, CommandParser, CommandError
 import re
 from termcolor import colored
 from notes.models import Note
-from ._term_blocks import TableBlock
-from ._notes_cmd import NoteCommand
+from notes.management.commands._term_blocks import TableBlock
+from notes.management.commands._notes_cmd import NoteCommand
 
 
 class ListCommand(NoteCommand):

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from notes.models import Note
-from ._notes_cmd import NoteCommand
+from notes.management.commands._notes_cmd import NoteCommand
 
 
 class DeleteCommand(NoteCommand):
