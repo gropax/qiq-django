@@ -1,5 +1,3 @@
-import os
-from django.core.management.base import BaseCommand, CommandParser, CommandError
 from notes.models import Note
 from notes.helpers import virtual_tags
 from termblocks import TextBlock, TableBlock, MarginBlock, VerticalLayout

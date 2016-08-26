@@ -1,11 +1,11 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
-from argparse import FileType
 
 from .subcommands.new import NewCommand
 from .subcommands.info import InfoCommand
 from .subcommands.delete import DeleteCommand
 from .subcommands.list import ListCommand
 from .subcommands.merge import MergeCommand
+from .subcommands.get import GetCommand
 
 
 def parser_class(cmd):
@@ -22,6 +22,7 @@ SUBCOMMANDS = {
     'delete': DeleteCommand,
     'list': ListCommand,
     'merge': MergeCommand,
+    'get': GetCommand,
 }
 class Command(BaseCommand):
     help = 'Manage notes'
