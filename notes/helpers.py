@@ -18,15 +18,27 @@ def merge_notes(proj, text, notes):
 
     note = Note(user_id=1, project=proj, text=text, rank=rank)
     note.save()
+
+    # Create references with previous notes
     note.references.add(*notes)
+
+    # Update reference of documents
+    docs = [d for n in notes for d in n.documents.all()]
+    for doc in docs:
+        doc.note = note
+        doc.save()
+
     return note
 
 def virtual_tags(note):
     tags = []
-    if note.original: tags.append('ORIGINAL')
+    if note.original:
+        tags.append('ORIGINAL')
+    if note.documents.count():
+        tags.append('DOCUMENT')
     return tags
 
-VTAGS = ['ORIGINAL']
+VTAGS = ['ORIGINAL', 'DOCUMENT']
 
 IDS_re = re.compile(r'^\d+(?:,\d+)*$')
 PROJ_re = re.compile(r'^proj(?:ect)?:([a-z]+(?:\.[a-z]+)*)$')

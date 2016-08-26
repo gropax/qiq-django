@@ -18,3 +18,15 @@ class Note(models.Model):
     def __str__(self):
         l = len(self.text)
         return self.text[:50] + ('...' if l > 50 else '')
+
+
+class Document(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE,
+                             related_name='documents')
+
+    name = models.CharField(max_length=32, blank=False)
+    description = models.CharField(max_length=80, blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'name')

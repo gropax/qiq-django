@@ -22,19 +22,20 @@ class ListCommand(NoteCommand):
         self.cmd.stdout.write(output)
 
     def format(self, notes):
-        headers = ['ID', 'Age', 'Project', 'Og', 'Rk', 'Text']
+        headers = ['ID', 'Age', 'Project', 'Documents', 'Og', 'Rk', 'Text']
         lines = [headers]
         for note in notes:
             id = note.id
             age = self.note_age(note)
             proj = note.project
             project = proj.full_name() if proj else '-'
+            docs = ",".join(d.name for d in note.documents.all()) or '-'
             rank = note.rank
             text = re.sub(r'\n+', '  ', note.text)
             original = '✓' if note.original else '✗'
             #original = colored('✓', 'green') if note.original else colored('✗', 'red')
             #created = note.created
-            lines.append([id, age, project, original, rank, text])
+            lines.append([id, age, project, docs, original, rank, text])
 
         table = TableBlock(lines, headers=['bold', 'underline'],
                            color_line='grey', max_line=1)

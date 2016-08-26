@@ -23,6 +23,7 @@ class InfoCommand(NoteCommand):
         username = note.user.username
         proj = note.project
         project = proj.full_name() if proj else '-'
+        docs = ", ".join(d.name for d in note.documents.all()) or '-'
         created = note.created.strftime("%Y-%m-%d %H:%M:%S") + " (%s)" % self.note_age(note)
         vtags = " ".join(tag for tag in virtual_tags(note))
         prev = ",".join(str(n.id) for n in note.references.all()) or '-'
@@ -34,6 +35,7 @@ class InfoCommand(NoteCommand):
             ['ID', id],
             ['Username', username],
             ['Project', project],
+            ['Documents', docs],
             ['Created', created],
             ['Virtual tags', vtags],
             ['Previous notes', prev],

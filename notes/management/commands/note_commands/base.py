@@ -9,7 +9,7 @@ from projects.helpers import parse_project_name, get_project, get_or_create_proj
 from notes.helpers import filter_query
 
 
-VTAGS = ['ORIGINAL']
+VTAGS = ['ORIGINAL', 'DOCUMENT']
 
 IDS_re = re.compile(r'^\d+(?:,\d+)*$')
 PROJ_re = re.compile(r'^proj(?:ect)?:([a-z]+(?:\.[a-z]+)*)$')
@@ -133,5 +133,8 @@ class NoteCommand(object):
 
         if 'ORIGINAL' in vtags:
             q['original'] = vtags['ORIGINAL']
+
+        if 'DOCUMENT' in vtags:
+            q['documents__isnull'] = not vtags['DOCUMENT']
 
         return q

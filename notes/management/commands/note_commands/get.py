@@ -1,6 +1,4 @@
 from notes.models import Note
-from notes.helpers import virtual_tags
-from termblocks import TextBlock, TableBlock, MarginBlock, VerticalLayout
 from .base import NoteCommand
 
 

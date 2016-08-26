@@ -1,11 +1,9 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 
-from .note_commands.new import NewCommand
-from .note_commands.info import InfoCommand
-from .note_commands.delete import DeleteCommand
-from .note_commands.list import ListCommand
-from .note_commands.merge import MergeCommand
-from .note_commands.get import GetCommand
+from .document_commands.new import NewCommand
+from .document_commands.list import ListCommand
+from .document_commands.modify import ModifyCommand
+from .document_commands.delete import DeleteCommand
 
 
 def parser_class(cmd):
@@ -18,14 +16,12 @@ def parser_class(cmd):
 
 SUBCOMMANDS = {
     'new': NewCommand,
-    'info': InfoCommand,
-    'delete': DeleteCommand,
     'list': ListCommand,
-    'merge': MergeCommand,
-    'get': GetCommand,
+    'delete': DeleteCommand,
+    'modify': ModifyCommand,
 }
 class Command(BaseCommand):
-    help = 'Manage notes'
+    help = 'Manage documents'
 
     def __init__(self, *args, **kwargs):
         self.subcmds = {cmd: klass(self) for cmd, klass in SUBCOMMANDS.items()}
