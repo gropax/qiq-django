@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 import re
 from termcolor import colored
-from notes.management.commands._term_blocks import TableBlock
+from termblocks import TableBlock
 from projects.models import Project
 from .base import ProjectCommand
 

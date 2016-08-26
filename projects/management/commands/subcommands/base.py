@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from datetime import datetime
 from projects.models import Project
-from notes.management.commands._functions import parse_project_name, get_project
+from projects.helpers import parse_project_name, get_project
 
 
 class ProjectCommand(object):
