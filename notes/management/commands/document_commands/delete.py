@@ -13,7 +13,3 @@ class DeleteCommand(DocumentCommand):
 
         doc.delete()
         self.success_document_deleted(doc)
-
-    def success_document_deleted(self, doc):
-        s = "Document `%s` deleted" % doc.name
-        self.cmd.stdout.write(self.cmd.style.SUCCESS(s))

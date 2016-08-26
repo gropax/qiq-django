@@ -15,10 +15,10 @@ class NewCommand(DocumentCommand):
         self.check_document_name_is_valid(name)
         self.check_document_name_does_not_exist(name)
 
-        note = self.get_note_or_exit(options['note_id'])
+        note = self.find_note_or_error(options['note_id'])
         self.check_note_is_original(note)
 
         desc = options['description']
 
-        doc = self.create_document(name, note, desc)
-        self.notify_created(doc)
+        doc = self.create_document(name, note, desc)  # @fixme move method to helprs
+        self.success_document_created(doc)

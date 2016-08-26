@@ -1,12 +1,12 @@
-from django.core.management.base import BaseCommand, CommandParser, CommandError
 import re
-import pytz
+#import pytz
+#from datetime import datetime
 import subprocess
 import tempfile
-from datetime import datetime
 from notes.models import Note
 from projects.helpers import parse_project_name, get_project, get_or_create_project
-from notes.helpers import filter_query
+#from notes.helpers import filter_query
+from notes.management.commands._subcommand import Subcommand
 
 
 VTAGS = ['ORIGINAL', 'DOCUMENT']
@@ -16,44 +16,26 @@ PROJ_re = re.compile(r'^proj(?:ect)?:([a-z]+(?:\.[a-z]+)*)$')
 VTAG_re = re.compile(r'^(\+|-)([A-Z]+)$')
 
 
-class NoteCommand(object):
-    def __init__(self, cmd):
-        self.cmd = cmd
+class NoteCommand(Subcommand):
 
-    def note_age(self, note):
-        delta = datetime.now(pytz.utc) - note.created
-        years = delta.days // 365
-        if years:
-            return "%iy" % years
-        weeks = delta.days // 7
-        if weeks:
-            return "%iw" % weeks
-        if delta.days:
-            return "%id" % delta.days
-        hours = delta.seconds // 3600
-        if hours:
-            return "%ih" % hours
-        minutes = delta.seconds // 60
-        if minutes:
-            return "%im" % minutes
-        if delta.seconds:
-            return "%is" % delta.seconds
-        return ''
+    ###########################
+    # Terminal output methods #
+    ###########################
 
-    def notify_creation(self, note):
+    def success_note_created(self, note):
         s = 'Created note %s' % note.id
         if note.project:
             s += " in %s" % note.project.full_name()
         self.cmd.stdout.write(self.cmd.style.SUCCESS(s))
 
-    def notify_not_found(self, id):
-        s = "Note %s doesn't exist" % id
-        self.cmd.stdout.write(self.cmd.style.ERROR(s))
+    def success_notes_deleted(self, n):
+        notes = 'note' if n == 1 else 'notes'
+        self.success("%i %s deleted" % (n, notes))
 
-    def notify_no_match(self):
-        s = "No matches."
-        self.cmd.stdout.write(self.cmd.style.ERROR(s))
-        exit(1)
+
+    ################
+    # Text Edition #
+    ################
 
     def edit_note_in_editor(self, options, text=None):
         _, f = tempfile.mkstemp()
@@ -70,6 +52,11 @@ class NoteCommand(object):
         #subprocess.call(cmd)
 
         return f
+
+
+    ########################
+    # Interactive Commands #
+    ########################
 
     def get_or_prompt_project(self, options):
         if options['no_project']:
@@ -95,6 +82,10 @@ class NoteCommand(object):
                     else:
                         exit(1)
         return proj
+
+    def filter_notes(self, filters):
+        q = self.filter_query(filters)
+        return Note.objects.filter(**q)
 
     # @todo Move to _functions.py
     #

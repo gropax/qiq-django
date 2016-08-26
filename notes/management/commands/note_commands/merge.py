@@ -21,11 +21,10 @@ class MergeCommand(NoteCommand):
                                 help='create the project if it doesn\'t exist')
 
     def execute(self, args, options):
-        q = self.filter_query(options['filters'])
-        notes = Note.objects.filter(**q).all()
+        notes = self.filter_notes(options['filters']).all()
 
-        if not notes.all():
-            self.notify_no_match()
+        if not notes:
+            self.error_no_match()
 
         proj = self.get_or_prompt_project(options)
 
@@ -37,6 +36,6 @@ class MergeCommand(NoteCommand):
 
         if text:
             note = merge_notes(proj, text, notes)
-            self.notify_creation(note)
+            self.success_note_created(note)
         else:
             exit(1)

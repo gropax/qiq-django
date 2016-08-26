@@ -11,7 +11,7 @@ class ListCommand(DocumentCommand):
         docs = Document.objects.filter(user_id=1).all()
 
         if not docs.all():
-            self.notify_no_match()
+            self.error_no_match()
 
         sort = sorted(docs, key=lambda d: d.name)
 

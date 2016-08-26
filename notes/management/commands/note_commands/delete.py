@@ -9,13 +9,10 @@ class DeleteCommand(NoteCommand):
                             help='filters used to select the notes')
 
     def execute(self, args, options):
-        q = self.filter_query(options['filters'])
-        no, _ = Note.objects.filter(**q).delete()
-        if no:
-            self.notify_deleted(no)
-        else:
-            self.notify_no_match()
+        notes = self.filter_notes(options['filters'])
 
-    def notify_deleted(self, n):
-        notes = 'note' if n == 1 else 'notes'
-        self.cmd.stdout.write(self.cmd.style.SUCCESS("%i %s deleted" % (n, notes)))
+        no, _ = notes.delete()
+        if no:
+            self.success_notes_deleted(no)
+        else:
+            self.error_no_match()

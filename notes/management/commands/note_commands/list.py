@@ -12,11 +12,10 @@ class ListCommand(NoteCommand):
                             help='filters used to select the notes')
 
     def execute(self, args, options):
-        q = self.filter_query(options['filters'])
-        notes = Note.objects.filter(**q).all()
+        notes = self.filter_notes(options['filters']).all()
 
-        if not notes.all():
-            self.notify_no_match()
+        if not notes:
+            self.error_no_match()
 
         output = self.format(notes)
         self.cmd.stdout.write(output)
@@ -26,7 +25,7 @@ class ListCommand(NoteCommand):
         lines = [headers]
         for note in notes:
             id = note.id
-            age = self.note_age(note)
+            age = note.age()  # self.note_age(note)
             proj = note.project
             project = proj.full_name() if proj else '-'
             docs = ",".join(d.name for d in note.documents.all()) or '-'

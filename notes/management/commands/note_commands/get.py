@@ -10,11 +10,7 @@ class GetCommand(NoteCommand):
         parser.add_argument('id', type=int, help='the ID of the note')
 
     def execute(self, args, options):
-        try:
-            note = Note.objects.get(id=options['id'])
-        except:
-            self.notify_not_found(options['id'])
-            exit(1)
+        note = self.find_note_by_id_or_error(options['id'])
 
         if options['field'] == 'text':
             out = note.text

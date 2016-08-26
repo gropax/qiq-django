@@ -36,6 +36,6 @@ class NewCommand(NoteCommand):
 
         if text:
             note = create_note(proj, text)
-            self.notify_creation(note)
+            self.success_note_created(note)
         else:
             exit(1)

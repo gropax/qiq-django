@@ -1,3 +1,5 @@
+import pytz
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from projects.models import Project
@@ -18,6 +20,26 @@ class Note(models.Model):
     def __str__(self):
         l = len(self.text)
         return self.text[:50] + ('...' if l > 50 else '')
+
+    def age(self):
+        delta = datetime.now(pytz.utc) - self.created
+        years = delta.days // 365
+        if years:
+            return "%iy" % years
+        weeks = delta.days // 7
+        if weeks:
+            return "%iw" % weeks
+        if delta.days:
+            return "%id" % delta.days
+        hours = delta.seconds // 3600
+        if hours:
+            return "%ih" % hours
+        minutes = delta.seconds // 60
+        if minutes:
+            return "%im" % minutes
+        if delta.seconds:
+            return "%is" % delta.seconds
+        return ''
 
 
 class Document(models.Model):

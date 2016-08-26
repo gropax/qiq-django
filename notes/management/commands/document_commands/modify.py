@@ -18,6 +18,8 @@ class ModifyCommand(DocumentCommand):
         old_name, desc_mod = None, None
 
         new_name = options['new_name']
+        self.check_document_name_is_valid(new_name)
+
         if new_name and new_name != doc.name:
             old_name = doc.name
             doc.name = new_name
@@ -33,6 +35,11 @@ class ModifyCommand(DocumentCommand):
         else:
             self.warning_nothing_to_do()
 
+
+    ###########################
+    # Terminal output methods #
+    ###########################
+
     def success_document_modified(self, doc, old_name, desc_mod):
         if old_name:
             if desc_mod:
@@ -42,9 +49,5 @@ class ModifyCommand(DocumentCommand):
         else:
             if desc_mod:
                 s = "Document `%s` modified" % doc.name
-        self.cmd.stdout.write(self.cmd.style.SUCCESS(s))
 
-    def warning_nothing_to_do(self):
-        s = "Nothing to do"
-        self.cmd.stdout.write(self.cmd.style.WARNING(s))
-        sys.exit()
+        self.success(s)
