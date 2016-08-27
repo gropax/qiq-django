@@ -22,11 +22,10 @@ class ModifyCommand(ProjectCommand):
             self.error_project_not_found(name)
 
         old_name, merged, desc_mod = None, False, False
-
         new_name = options['new_name']
-        self.check_project_name_is_valid(new_name)
 
         if new_name and new_name != proj.full_name():
+            self.check_project_name_is_valid(new_name)
             old_name = proj.full_name()
 
             dest = get_project(new_name)

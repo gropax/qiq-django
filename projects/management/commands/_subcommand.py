@@ -1,5 +1,6 @@
 import sys
 import re
+from qiq.common import SUCCESS, NOT_FOUND
 
 
 class Subcommand(object):
@@ -23,8 +24,8 @@ class Subcommand(object):
 
     def error_no_match(self):
         self.error("No match")
-        sys.exit(1)
+        sys.exit(NOT_FOUND)
 
     def warning_nothing_to_do(self):
         self.warning("Nothing to do")
-        sys.exit(0)
+        sys.exit(SUCCESS)

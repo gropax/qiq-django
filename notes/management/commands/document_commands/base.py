@@ -1,5 +1,6 @@
 import sys
 import re
+from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
 from notes.models import Document, Note
 from notes.management.commands._subcommand import Subcommand
 
@@ -16,33 +17,33 @@ class DocumentCommand(Subcommand):
 
     def success_document_created(self, doc):
         self.success("Created document `%s`" % doc.name)
-        sys.exit(0)
+        sys.exit(SUCCESS)
 
     #   success_document_modified
 
     def success_document_deleted(self, doc):
         self.success("Document `%s` deleted" % doc.name)
-        sys.exit(0)
+        sys.exit(SUCCESS)
 
     def error_document_not_found(self, id):
         self.error("Document `%s` doesn't exist" % id)
-        sys.exit(32)
+        sys.exit(NOT_FOUND)
 
     def error_note_is_not_original(self, note):
         self.error("Note `%s` isn't original" % note.id)
-        sys.exit(32)
+        sys.exit(INVALID)
 
     def error_invalid_document_name(self, name):
         self.error("Invalid document name: %s" % name)
-        sys.exit(30)
+        sys.exit(INVALID)
 
     def error_invalid_document_name_or_id(self, name_or_id):
         self.error("Invalid document name or id: %s" % name_or_id)
-        sys.exit(30)
+        sys.exit(NOT_FOUND)
 
     def error_document_already_exists(self, name):
         self.error("The document `%s` already exists" % name)
-        sys.exit(31)
+        sys.exit(EXISTS)
 
 
     #####################

@@ -18,9 +18,8 @@ class ModifyCommand(DocumentCommand):
         old_name, desc_mod = None, None
 
         new_name = options['new_name']
-        self.check_document_name_is_valid(new_name)
-
         if new_name and new_name != doc.name:
+            self.check_document_name_is_valid(new_name)
             old_name = doc.name
             doc.name = new_name
 

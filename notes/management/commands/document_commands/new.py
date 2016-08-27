@@ -15,7 +15,7 @@ class NewCommand(DocumentCommand):
         self.check_document_name_is_valid(name)
         self.check_document_name_does_not_exist(name)
 
-        note = self.find_note_or_error(options['note_id'])
+        note = self.find_note_by_id_or_error(options['note_id'])
         self.check_note_is_original(note)
 
         desc = options['description']
