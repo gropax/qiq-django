@@ -1,5 +1,3 @@
-from django.core.management.base import BaseCommand, CommandParser, CommandError
-import re
 from termcolor import colored
 from termblocks import TableBlock
 from projects.models import Project
@@ -14,7 +12,7 @@ class ListCommand(ProjectCommand):
         projs = Project.objects.filter(user_id=1).all()
 
         if not projs.all():
-            self.notify_no_match()
+            self.error_no_match()
 
         sort = sorted(projs, key=lambda p: p.full_name())
 

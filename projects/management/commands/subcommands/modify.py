@@ -1,5 +1,3 @@
-import os
-from django.core.management.base import BaseCommand, CommandParser, CommandError
 from projects.models import Project
 from projects.helpers import get_project, get_or_create_project
 from .base import ProjectCommand
@@ -14,43 +12,42 @@ class ModifyCommand(ProjectCommand):
         parser.add_argument('-n', '--new-name', type=str,
                             help='the new name of the project')
 
-    def notify_merged(self, proj, dest):
-        s = "Merged projects `%s` and `%s`" % (proj.full_name(), dest.full_name())
-        self.cmd.stdout.write(self.cmd.style.SUCCESS(s))
-
-    def notify_renamed(self, name, new_name):
-        s = "Renamed project `%s` to `%s`" % (name, new_name)
-        self.cmd.stdout.write(self.cmd.style.SUCCESS(s))
-
-    def notify_modified(self, proj):
-        s = "Modified project `%s`" % (proj.full_name())
-        self.cmd.stdout.write(self.cmd.style.SUCCESS(s))
-
     def execute(self, args, options):
         name = options['name']
+        self.check_project_name_is_valid(name)
 
+        # @fixme create #find_project_or_error
         proj = get_project(name)
         if not proj:
-            self.notify_not_found(name)
+            self.error_project_not_found(name)
+
+        old_name, merged, desc_mod = None, False, False
 
         new_name = options['new_name']
-        if new_name:
+        self.check_project_name_is_valid(new_name)
+
+        if new_name and new_name != proj.full_name():
+            old_name = proj.full_name()
+
             dest = get_project(new_name)
             if dest:
+                # @fixme create #prompt_merge_projects
                 create = input('The project `%s` already exists. Merge projects ? (no) ' % new_name)
                 if create.lower() in ['', 'n', 'no']:
                     exit(1)
                 else:
+                    merged = True
+                    # @fixme create #merge_projects
                     for note in proj.notes.all():
                         note.project = dest
                         note.save()
 
                     proj.delete()
-                    self.notify_merged(proj, dest)
                     proj = dest
             else:
-                *parents, base_name = new_name.split('.')
-                parent_name = ".".join(parents)
+                # @fixme create #create_project_recursively
+                *parents, base_name = new_name.split('/')
+                parent_name = "/".join(parents)
 
                 if parent_name:
                     parent, _ = get_or_create_project(parent_name)
@@ -59,11 +56,28 @@ class ModifyCommand(ProjectCommand):
 
                 proj.name = base_name
                 proj.parent = parent
-                self.notify_renamed(name, new_name)
 
-        desc = options.get('description', None)
-        if desc:
+        desc = options['description']
+        if desc and desc != proj.description:
+            desc_mod = True
             proj.description = desc
-            self.notify_modified(proj)
 
-        proj.save()
+        if old_name or desc_mod:
+            proj.save()
+            self.success_project_modified(proj, old_name, merged, desc_mod)
+        else:
+            self.warning_nothing_to_do()
+
+    def success_project_modified(self, proj, old_name, merged, desc_mod):
+        if old_name:
+            if merged:
+                action = "merged with"
+            else:
+                action = "renamed to"
+            s = "Project `%s` %s `%s`" % (old_name, action, proj.full_name())
+            if desc_mod:
+                s += " and modified"
+        else:
+            s = "Project `%s` modified" % proj.full_name()
+
+        self.success(s)

@@ -2,7 +2,7 @@ from notes.models import Project
 
 
 def parse_project_name(name):
-    return name.lower().split('.')
+    return name.lower().split('/')
 
 def get_or_create_project(name, desc=''):
     proj, created, parent_id = None, None, None

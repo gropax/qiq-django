@@ -12,7 +12,7 @@ class Project(models.Model):
 
     def full_name(self):
         if self.parent:
-            return self.parent.__str__() + '.' + self.name
+            return self.parent.__str__() + '/' + self.name
         else:
             return self.name
 
