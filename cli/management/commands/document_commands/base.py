@@ -2,7 +2,7 @@ import sys
 import re
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
 from notes.models import Document, Note
-from notes.management.commands._subcommand import Subcommand
+from cli.management.commands._subcommand import Subcommand
 
 
 # Document's name begin with a letter, may contain numbers and dots, cannot end

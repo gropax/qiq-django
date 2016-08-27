@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from argparse import FileType
-from .subcommands.new import NewCommand
-from .subcommands.list import ListCommand
-from .subcommands.modify import ModifyCommand
+from .project_commands.new import NewCommand
+from .project_commands.list import ListCommand
+from .project_commands.modify import ModifyCommand
 
 
 def parser_class(cmd):

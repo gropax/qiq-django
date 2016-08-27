@@ -1,12 +1,9 @@
 import re
-#import pytz
-#from datetime import datetime
 import subprocess
 import tempfile
 from notes.models import Note
 from projects.helpers import parse_project_name, get_project, get_or_create_project
-#from notes.helpers import filter_query
-from notes.management.commands._subcommand import Subcommand
+from cli.management.commands._subcommand import Subcommand
 
 
 VTAGS = ['ORIGINAL', 'DOCUMENT']

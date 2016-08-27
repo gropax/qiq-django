@@ -1,6 +1,7 @@
 import sys
 import re
-from qiq.common import SUCCESS, NOT_FOUND
+from notes.models import Note
+from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
 
 
 class Subcommand(object):
@@ -29,3 +30,18 @@ class Subcommand(object):
     def warning_nothing_to_do(self):
         self.warning("Nothing to do")
         sys.exit(SUCCESS)
+
+    def error_note_not_found(self, note_id):
+        self.error("Note %s doesn't exist" % note_id)
+        sys.exit(NOT_FOUND)
+
+
+    ###############################
+    # Find models or return error #
+    ###############################
+
+    def find_note_by_id_or_error(self, note_id):
+        try:
+            return Note.objects.get(id=note_id)
+        except:
+            self.error_note_not_found(note_id)

@@ -3,7 +3,7 @@ import re
 from qiq.common import SUCCESS, NOT_FOUND, EXISTS, INVALID
 from projects.models import Project
 from projects.helpers import parse_project_name, get_project
-from projects.management.commands._subcommand import Subcommand
+from cli.management.commands._subcommand import Subcommand
 
 
 # Project's name begin with a letter, may contain numbers and slashs, cannot end
