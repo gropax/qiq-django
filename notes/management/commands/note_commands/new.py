@@ -38,4 +38,4 @@ class NewCommand(NoteCommand):
             note = create_note(proj, text)
             self.success_note_created(note)
         else:
-            exit(1)
+            self.warning_nothing_to_do()

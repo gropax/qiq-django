@@ -38,4 +38,4 @@ class MergeCommand(NoteCommand):
             note = merge_notes(proj, text, notes)
             self.success_note_created(note)
         else:
-            exit(1)
+            self.warning_nothing_to_do()
