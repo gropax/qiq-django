@@ -81,13 +81,8 @@ WSGI_APPLICATION = 'qiq.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'db', 'dev.sqlite3'),
     },
-    #'test': {
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': os.path.join(BASE_DIR, 'test.sqlite3'),
-        #'TEST_NAME': 'auto_tests',
-    #},
 }
 
 
