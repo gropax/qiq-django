@@ -19,6 +19,7 @@ class NewCommand(TestCase):
         self.assert_status(EXISTS, 'project', 'new', 'proj')
 
     def test_error_invalid_name(self):
+        self.assert_status(INVALID, 'project', 'new', 'proj.sub')
         self.assert_status(INVALID, 'project', 'new', '1proj')
         self.assert_status(INVALID, 'project', 'new', '/proj')
         self.assert_status(INVALID, 'project', 'new', 'proj/')
@@ -39,7 +40,11 @@ class ModifyCommand(TestCase):
         self.assert_status(SUCCESS, 'project', 'modify', 'proj2', '-n', 'proj3', '-d', '"desc2"')
         self.assert_status(SUCCESS, 'project', 'modify', 'proj3', '-n', 'proj3')
 
+        proj = Project(user_id=1, name='abc'); proj.save()
+        self.assert_status(SUCCESS, 'project', 'modify', proj.id, '-n', 'def')
+
     def test_error_invalid_name(self):
+        self.assert_status(INVALID, 'project', 'modify', 'proj.sub', '-n', 'name')
         self.assert_status(INVALID, 'project', 'modify', '/proj', '-n', 'name')
         self.assert_status(SUCCESS, 'project', 'new', 'proj')
         self.assert_status(INVALID, 'project', 'modify', 'proj', '-n', '/name')

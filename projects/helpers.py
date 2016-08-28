@@ -1,3 +1,4 @@
+import re
 from notes.models import Project
 
 
@@ -34,3 +35,10 @@ def get_project(name):
         parent_id = proj.id
 
     return proj
+
+# Project's name begin with a letter, may contain numbers and slashs, cannot end
+# with a slash. All letters are lower case.
+PROJNAME_re = re.compile(r'^[a-z][_a-z0-9]*(?:\/[a-z][_a-z0-9]*)*$')
+
+def project_name_is_valid(name):
+    return PROJNAME_re.match(name)

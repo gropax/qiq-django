@@ -2,13 +2,9 @@ import sys
 import re
 from qiq.common import SUCCESS, NOT_FOUND, EXISTS, INVALID
 from projects.models import Project
-from projects.helpers import parse_project_name, get_project
+from projects.helpers import parse_project_name, get_project, project_name_is_valid
 from cli.management.commands._subcommand import Subcommand
 
-
-# Project's name begin with a letter, may contain numbers and slashs, cannot end
-# with a slash. All letters are lower case.
-PROJNAME_re = re.compile(r'^[a-z][_a-z0-9]*(?:\/[a-z][_a-z0-9]*)*$')
 
 class ProjectCommand(Subcommand):
 
@@ -24,11 +20,31 @@ class ProjectCommand(Subcommand):
         self.error("Project `%s` already exists" % name)
         sys.exit(EXISTS)
 
-    def error_invalid_project_name(self, name):
+    def error_invalid_project_name(self, name, interactive=False):
         self.error("Invalid project name: %s" % name)
+        if not interactive:
+            sys.exit(INVALID)
+
+    def error_invalid_project_name_or_id(self, name_or_id):
+        self.error("Invalid project name or id: %s" % name_or_id)
         sys.exit(INVALID)
 
 
     def check_project_name_is_valid(self, name):
-        if not PROJNAME_re.match(name):
+        if not project_name_is_valid(name):
             self.error_invalid_project_name(name)
+
+
+    def find_project_by_name_or_id_or_error(self, name_or_id):
+        name_or_id = str(name_or_id)
+        if re.match(r'^[0-9]+$', name_or_id):
+            q = {'id': int(name_or_id)}
+        elif project_name_is_valid(str(name_or_id)):
+            q = {'name': name_or_id}
+        else:
+            self.error_invalid_project_name_or_id(name_or_id)
+
+        try:
+            return Project.objects.get(**q)
+        except:
+            self.error_project_not_found(name_or_id)

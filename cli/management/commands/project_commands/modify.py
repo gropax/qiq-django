@@ -5,21 +5,17 @@ from .base import ProjectCommand
 
 class ModifyCommand(ProjectCommand):
     def add_arguments(self, parser):
-        parser.add_argument('name', type=str,
-                            help='the name of the project (fully qualified)')
+        parser.add_argument('name_or_id', type=str,
+                            help='the name or ID of the project (fully qualified)')
         parser.add_argument('-d', '--description', type=str,
                             help='the description of the project')
         parser.add_argument('-n', '--new-name', type=str,
                             help='the new name of the project')
 
     def execute(self, args, options):
-        name = options['name']
-        self.check_project_name_is_valid(name)
+        name_or_id = options['name_or_id']
 
-        # @fixme create #find_project_or_error
-        proj = get_project(name)
-        if not proj:
-            self.error_project_not_found(name)
+        proj = self.find_project_by_name_or_id_or_error(name_or_id)
 
         old_name, merged, desc_mod = None, False, False
         new_name = options['new_name']

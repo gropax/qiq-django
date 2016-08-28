@@ -2,7 +2,7 @@ import re
 import subprocess
 import tempfile
 from notes.models import Note
-from projects.helpers import parse_project_name, get_project, get_or_create_project
+from projects.helpers import parse_project_name, get_project, get_or_create_project, project_name_is_valid
 from cli.management.commands._subcommand import Subcommand
 
 
@@ -55,17 +55,26 @@ class NoteCommand(Subcommand):
     # Interactive Commands #
     ########################
 
+    def prompt_project(self):
+        # @todo Add auto complete
+        while True:
+            name = input('Project: ')
+            if not name:
+                return None
+            elif project_name_is_valid(name):
+                return name
+            else:
+                self.error_invalid_project_name(name, interactive=True)
+
     def get_or_prompt_project(self, options):
         if options['no_project']:
             proj = None
         else:
             if options['project']:
                 name = options['project']
+                self.check_project_name_is_valid(name)
             else:
-                # @todo Add auto complete
-                name = input('Project: ')
-                if not name:
-                    return None
+                name = self.prompt_project()
 
             if options['create_project']:
                 proj, _ = get_or_create_project(name)
