@@ -1,6 +1,5 @@
 from notes.models import Note
-from notes.helpers import virtual_tags
-from termblocks import TextBlock, TableBlock, MarginBlock, VerticalLayout
+from termblocks import TextBlock, MarginBlock, VerticalLayout
 from .base import NoteCommand
 
 
@@ -11,34 +10,22 @@ class InfoCommand(NoteCommand):
     def execute(self, args, options):
         note = self.find_note_by_id_or_error(options['id'])
 
-        output = self.format_info(note)
+        output = self.format(note)
         self.cmd.stdout.write(output)
 
-    def format_info(self, note):
-        id = note.id
-        username = note.user.username
-        proj = note.project
-        project = proj.full_name() if proj else '-'
-        docs = ", ".join(d.name for d in note.documents.all()) or '-'
-        created = note.created.strftime("%Y-%m-%d %H:%M:%S") + " (%s)" % note.age() #self.note_age(note)
-        vtags = " ".join(tag for tag in virtual_tags(note))
-        prev = ",".join(str(n.id) for n in note.references.all()) or '-'
-        next = ",".join(str(n.id) for n in note.referencers.all()) or '-'
-        rank = note.rank
-
-        table = TableBlock([
-            ['Name', 'Value'],
-            ['ID', id],
-            ['Username', username],
-            ['Project', project],
-            ['Documents', docs],
-            ['Created', created],
-            ['Virtual tags', vtags],
-            ['Previous notes', prev],
-            ['Next notes', next],
-            ['Rank', rank],
-        ], headers=['bold', 'underline'], color_line='grey')
-
+    def format(self, note):
+        table = self.model_table([
+            ['ID', note.id],
+            ['Username', note.user.username],
+            ['Project', self.format_project_name(note.project)],
+            ['Original', self.format_original(note)],
+            ['Documents', self.format_document_list(note)],
+            ['Created', self.format_creation_date(note)],
+            ['Virtual tags', self.format_virtual_tags(note)],
+            ['Previous notes', self.format_references(note.references)],
+            ['Next notes', self.format_references(note.referencers)],
+            ['Rank', note.rank],
+        ])
         text = TextBlock(note.text)
         margin = MarginBlock(text, left=4, right=4, top=1, bottom=1)
         vlayout = VerticalLayout([table, margin])

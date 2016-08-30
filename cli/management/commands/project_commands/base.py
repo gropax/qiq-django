@@ -20,11 +20,6 @@ class ProjectCommand(Subcommand):
         self.error("Project `%s` already exists" % name)
         sys.exit(EXISTS)
 
-    def error_invalid_project_name(self, name, interactive=False):
-        self.error("Invalid project name: %s" % name)
-        if not interactive:
-            sys.exit(INVALID)
-
     def error_invalid_project_name_or_id(self, name_or_id):
         self.error("Invalid project name or id: %s" % name_or_id)
         sys.exit(INVALID)

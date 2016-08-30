@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 import re
-#from termcolor import colored
 from notes.models import Note
 from termblocks import TableBlock
 from .base import NoteCommand
@@ -22,21 +21,16 @@ class ListCommand(NoteCommand):
 
     def format(self, notes):
         headers = ['ID', 'Age', 'Project', 'Documents', 'Og', 'Rk', 'Text']
-        lines = [headers]
-        for note in notes:
-            id = note.id
-            age = note.age()  # self.note_age(note)
-            proj = note.project
-            project = proj.full_name() if proj else '-'
-            docs = ",".join(d.name for d in note.documents.all()) or '-'
-            rank = note.rank
-            text = re.sub(r'\n+', '  ', note.text)
-            original = '✓' if note.original else '✗'
-            #original = colored('✓', 'green') if note.original else colored('✗', 'red')
-            #created = note.created
-            lines.append([id, age, project, docs, original, rank, text])
-
-        table = TableBlock(lines, headers=['bold', 'underline'],
-                           color_line='grey', max_line=1)
-
+        table = self.list_table(headers, notes, self.list_row_data)
         return table.format()
+
+    def list_row_data(self, note):
+        return [
+            note.id,
+            note.age(),
+            self.format_project_name(note.project),
+            self.format_document_list(note),
+            self.format_original(note),
+            note.rank,
+            self.format_text(note),
+        ]

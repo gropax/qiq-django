@@ -3,6 +3,7 @@ from argparse import FileType
 from .project_commands.new import NewCommand
 from .project_commands.list import ListCommand
 from .project_commands.modify import ModifyCommand
+from .project_commands.info import InfoCommand
 
 
 def parser_class(cmd):
@@ -17,6 +18,7 @@ SUBCOMMANDS = {
     'new': NewCommand,
     'list': ListCommand,
     'modify': ModifyCommand,
+    'info': InfoCommand,
 }
 class Command(BaseCommand):
     help = 'Manage project'

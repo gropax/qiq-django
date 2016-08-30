@@ -51,3 +51,14 @@ class ModifyCommand(TestCase):
 
     def test_error_project_not_found(self):
         self.assert_status(NOT_FOUND, 'project', 'modify', 'proj', '-d', '"auie"')
+
+
+class InfoCommand(TestCase):
+    def test_success(self):
+        proj = Project(user_id=1, name='abc'); proj.save()
+        self.assert_status(SUCCESS, 'project', 'info', proj.id)
+        self.assert_status(SUCCESS, 'project', 'info', proj.name)
+
+    def test_error_not_found(self):
+        self.assert_status(NOT_FOUND, 'project', 'info', 123)
+        self.assert_status(NOT_FOUND, 'project', 'info', 'myproj')

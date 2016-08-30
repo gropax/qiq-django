@@ -1,4 +1,3 @@
-from argparse import FileType
 from projects.models import Project
 from projects.helpers import parse_project_name, get_or_create_project, get_project
 from .base import ProjectCommand
