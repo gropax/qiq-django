@@ -1,7 +1,9 @@
 import re
 import subprocess
 import tempfile
+import readline  # Used for autocomplete
 from notes.models import Note
+from projects.models import Project
 from projects.helpers import parse_project_name, get_project, get_or_create_project, project_name_is_valid
 from cli.management.commands._subcommand import Subcommand
 
@@ -55,8 +57,24 @@ class NoteCommand(Subcommand):
     # Interactive Commands #
     ########################
 
+    def set_project_autocomplete(self):
+        completer = self.project_completer()
+
+        # Remove / from delimiter to complete project full_name
+        delims = readline.get_completer_delims()
+        readline.set_completer_delims(delims.replace('/', ''))
+
+        readline.set_completer(completer.complete)
+        readline.parse_and_bind('tab: complete')
+
+    def project_completer(self):
+        projs = Project.objects.filter(user_id=1)
+        names = [proj.full_name() for proj in projs.all()]
+        return AutoCompleter(names)
+
     def prompt_project(self):
-        # @todo Add auto complete
+        self.set_project_autocomplete()
+
         while True:
             name = input('Project: ')
             if not name:
@@ -135,3 +153,23 @@ class NoteCommand(Subcommand):
             q['documents__isnull'] = not vtags['DOCUMENT']
 
         return q
+
+
+
+class AutoCompleter(object):
+    def __init__(self, options):
+        self.options = sorted(options)
+
+    def complete(self, text, state):
+        if state == 0:  # on first trigger, build possible matches
+            if text:  # cache matches (entries that start with entered text)
+                self.matches = [s for s in self.options
+                                  if s and s.startswith(text)]
+            else:  # no text entered, all matches possible
+                self.matches = self.options[:]
+
+        # return match indexed by state
+        try:
+            return self.matches[state]
+        except IndexError:
+            return None
