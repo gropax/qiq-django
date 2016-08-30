@@ -26,7 +26,7 @@ class MergeCommand(NoteCommand):
         if not notes:
             self.error_no_match()
 
-        proj = self.get_or_prompt_project(options)
+        proj = self.get_or_prompt_project(options, default=self.default_project(notes))
 
         text = "\n\n".join(note.text for note in notes)
         f = self.edit_note_in_editor(options, text=text)
@@ -39,3 +39,9 @@ class MergeCommand(NoteCommand):
             self.success_note_created(note)
         else:
             self.warning_nothing_to_do()
+
+    def default_project(self, notes):
+        for note in notes:
+            if note.project:
+                return note.project
+        return None

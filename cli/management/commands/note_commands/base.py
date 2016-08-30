@@ -84,7 +84,19 @@ class NoteCommand(Subcommand):
             else:
                 self.error_invalid_project_name(name, interactive=True)
 
-    def get_or_prompt_project(self, options):
+    def ask_user(self, msg, default='yes'):
+        while True:
+            ans = input('%s (%s) ' % (msg, default))
+            if ans == '':
+                return True if default == 'yes' else False
+            elif ans.lower() in ['y', 'ye', 'yes']:
+                return True
+            elif ans.lower() in ['n', 'no']:
+                return False
+            else:
+                self.error("Invalid answer")
+
+    def get_or_prompt_project(self, options, default=None):
         if options['no_project']:
             proj = None
         else:
@@ -92,16 +104,16 @@ class NoteCommand(Subcommand):
                 name = options['project']
                 self.check_project_name_is_valid(name)
             else:
+                if default and self.ask_user('Use project `%s` ?' % default.name, default='yes'):
+                    return default
                 name = self.prompt_project()
 
-            if options['create_project']:
+            if options['project'] and options['create_project']:
                 proj, _ = get_or_create_project(name)
             else:
                 proj = get_project(name)
                 if not proj:
-                    self.cmd.stdout.write("The project `%s` doesn't exist." % name)
-                    create = input('Create it ? (yes) ')
-                    if create.lower() in ['', 'y', 'ye', 'yes']:
+                    if self.ask_user('Create it ?', default='yes'):
                         proj, _ = get_or_create_project(name)
                     else:
                         exit(1)

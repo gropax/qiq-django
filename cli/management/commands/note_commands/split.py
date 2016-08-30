@@ -22,7 +22,7 @@ class SplitCommand(NoteCommand):
 
     def execute(self, args, options):
         note = self.find_note_by_id_or_error(options['id'])
-        proj = self.get_or_prompt_project(options)
+        proj = self.get_or_prompt_project(options, default=note.project)
 
         f = self.edit_note_in_editor(options, text=note.text)
 
