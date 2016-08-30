@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 
 from .document_commands.new import NewCommand
+from .document_commands.info import InfoCommand
 from .document_commands.list import ListCommand
 from .document_commands.modify import ModifyCommand
 from .document_commands.delete import DeleteCommand
@@ -16,6 +17,7 @@ def parser_class(cmd):
 
 SUBCOMMANDS = {
     'new': NewCommand,
+    'info': InfoCommand,
     'list': ListCommand,
     'delete': DeleteCommand,
     'modify': ModifyCommand,

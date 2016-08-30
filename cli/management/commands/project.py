@@ -3,6 +3,7 @@ from argparse import FileType
 from .project_commands.new import NewCommand
 from .project_commands.list import ListCommand
 from .project_commands.modify import ModifyCommand
+from .project_commands.delete import DeleteCommand
 from .project_commands.info import InfoCommand
 
 
@@ -18,6 +19,7 @@ SUBCOMMANDS = {
     'new': NewCommand,
     'list': ListCommand,
     'modify': ModifyCommand,
+    'delete': DeleteCommand,
     'info': InfoCommand,
 }
 class Command(BaseCommand):

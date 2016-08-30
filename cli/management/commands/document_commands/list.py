@@ -18,23 +18,6 @@ class ListCommand(DocumentCommand):
         output = self.format(sort)
         self.cmd.stdout.write(output)
 
-    #def format(self, docs):
-        #headers = ['ID', 'Project', 'Name', 'NoteID', 'Title']
-        #lines = [headers]
-        #for doc in docs:
-            #id = doc.id
-            #proj = doc.note.project
-            #proj_name = proj.full_name() if proj else '-'
-            #name = doc.name
-            #note_id = doc.note.id
-            #desc = doc.description or '-'
-            #lines.append([id, proj_name, name, note_id, desc])
-
-        #table = TableBlock(lines, headers=['bold', 'underline'],
-                           #color_line='grey', max_line=1)
-
-        #return table.format()
-
     def format(self, docs):
         headers = ['ID', 'Project', 'Name', 'NoteID', 'Title']
         table = self.list_table(headers, docs, self.list_row_data)

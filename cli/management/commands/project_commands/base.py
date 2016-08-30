@@ -12,6 +12,10 @@ class ProjectCommand(Subcommand):
         self.success('Created project `%s`' % project.full_name())
         sys.exit(SUCCESS)
 
+    def success_project_deleted(self, proj):
+        self.success("Project `%s` deleted" % proj.name)
+        sys.exit(SUCCESS)
+
     def error_project_not_found(self, name):
         self.error("Project `%s` doesn't exist" % name)
         sys.exit(NOT_FOUND)
@@ -24,10 +28,6 @@ class ProjectCommand(Subcommand):
         self.error("Invalid project name or id: %s" % name_or_id)
         sys.exit(INVALID)
 
-
-    def check_project_name_is_valid(self, name):
-        if not project_name_is_valid(name):
-            self.error_invalid_project_name(name)
 
 
     def find_project_by_name_or_id_or_error(self, name_or_id):

@@ -2,6 +2,7 @@ import sys
 import re
 from notes.models import Note
 from notes.helpers import virtual_tags
+from projects.helpers import project_name_is_valid
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
 from termblocks import TableBlock
 
@@ -41,6 +42,11 @@ class Subcommand(object):
         self.error("Invalid project name: %s" % name)
         if not interactive:
             sys.exit(INVALID)
+
+
+    def check_project_name_is_valid(self, name):
+        if not project_name_is_valid(name):
+            self.error_invalid_project_name(name)
 
 
     ###############################
