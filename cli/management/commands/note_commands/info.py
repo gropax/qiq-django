@@ -1,6 +1,7 @@
 from notes.models import Note
 from termblocks import TextBlock, MarginBlock, VerticalLayout
 from .base import NoteCommand
+from cli.format import model_table, format_project_name, format_original, format_document_list, format_creation_date, format_references, format_virtual_tags
 
 
 class InfoCommand(NoteCommand):
@@ -14,16 +15,16 @@ class InfoCommand(NoteCommand):
         self.cmd.stdout.write(output)
 
     def format(self, note):
-        table = self.model_table([
+        table = model_table([
             ['ID', note.id],
             ['Username', note.user.username],
-            ['Project', self.format_project_name(note.project)],
-            ['Original', self.format_original(note)],
-            ['Documents', self.format_document_list(note)],
-            ['Created', self.format_creation_date(note)],
-            ['Virtual tags', self.format_virtual_tags(note)],
-            ['Previous notes', self.format_references(note.references)],
-            ['Next notes', self.format_references(note.referencers)],
+            ['Project', format_project_name(note.project)],
+            ['Original', format_original(note)],
+            ['Documents', format_document_list(note)],
+            ['Created', format_creation_date(note)],
+            ['Virtual tags', format_virtual_tags(note)],
+            ['Previous notes', format_references(note.references)],
+            ['Next notes', format_references(note.referencers)],
             ['Rank', note.rank],
         ])
         text = TextBlock(note.text)

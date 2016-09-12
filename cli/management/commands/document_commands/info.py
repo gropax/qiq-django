@@ -1,5 +1,6 @@
 from notes.models import Note
 from termblocks import TextBlock, MarginBlock, VerticalLayout
+from cli.format import model_table
 from .base import DocumentCommand
 
 
@@ -16,7 +17,7 @@ class InfoCommand(DocumentCommand):
 
     def format(self, doc):
         note = doc.note
-        table = self.model_table([
+        table = model_table([
             ['ID', doc.id],
             ['Username', note.user.username],
             ['Project', self.format_project_name(note.project)],

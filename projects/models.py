@@ -8,7 +8,7 @@ class Project(models.Model):
                                related_name='children', blank=True, null=True)
 
     name = models.CharField(max_length=32, blank=False)
-    description = models.CharField(max_length=80, blank=True)
+    description = models.CharField(max_length=80, blank=True)  # @fixme Add null=True
 
     def full_name(self):
         if self.parent:

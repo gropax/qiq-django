@@ -1,6 +1,7 @@
 from termblocks import TableBlock
 from notes.models import Document
 from .base import DocumentCommand
+from cli.format import list_table, format_project_name, format_document_title
 
 
 class ListCommand(DocumentCommand):
@@ -20,14 +21,14 @@ class ListCommand(DocumentCommand):
 
     def format(self, docs):
         headers = ['ID', 'Project', 'Name', 'NoteID', 'Title']
-        table = self.list_table(headers, docs, self.list_row_data)
+        table = list_table(headers, docs, self.list_row_data)
         return table.format()
 
     def list_row_data(self, doc):
         return [
             doc.id,
-            self.format_project_name(doc.note.project),
+            format_project_name(doc.note.project),
             doc.name,
             doc.note.id,
-            self.format_document_title(doc),
+            format_document_title(doc),
         ]

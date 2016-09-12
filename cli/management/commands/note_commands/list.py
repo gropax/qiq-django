@@ -3,6 +3,7 @@ import re
 from notes.models import Note
 from termblocks import TableBlock
 from .base import NoteCommand
+from cli.format import list_table, format_project_name, format_document_list, format_original, format_text
 
 
 class ListCommand(NoteCommand):
@@ -21,16 +22,16 @@ class ListCommand(NoteCommand):
 
     def format(self, notes):
         headers = ['ID', 'Age', 'Project', 'Documents', 'Og', 'Rk', 'Text']
-        table = self.list_table(headers, notes, self.list_row_data)
+        table = list_table(headers, notes, self.list_row_data)
         return table.format()
 
     def list_row_data(self, note):
         return [
             note.id,
             note.age(),
-            self.format_project_name(note.project),
-            self.format_document_list(note),
-            self.format_original(note),
+            format_project_name(note.project),
+            format_document_list(note),
+            format_original(note),
             note.rank,
-            self.format_text(note),
+            format_text(note),
         ]

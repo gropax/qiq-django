@@ -1,6 +1,7 @@
 from projects.models import Project
 from termblocks import TextBlock, TableBlock, MarginBlock, VerticalLayout
 from .base import ProjectCommand
+from cli.format import model_table, format_project_name, format_project_description
 
 
 class InfoCommand(ProjectCommand):
@@ -15,22 +16,22 @@ class InfoCommand(ProjectCommand):
         output = self.format(proj)
         self.cmd.stdout.write(output)
 
-    def format_info(self, proj):
-        table = TableBlock([
-            ['Name',       'Value'],
-            ['ID',          proj.id],
-            ['Name',        proj.full_name()],
-            ['Description', proj.description],
-            ['Notes',       proj.notes.count()],
-        ], headers=['bold', 'underline'], color_line='grey')
+    #def format_info(self, proj):
+        #table = TableBlock([
+            #['Name',       'Value'],
+            #['ID',          proj.id],
+            #['Name',        proj.full_name()],
+            #['Description', proj.description],
+            #['Notes',       proj.notes.count()],
+        #], headers=['bold', 'underline'], color_line='grey')
 
-        return table.format()
+        #return table.format()
 
     def format(self, proj):
-        table = self.model_table([
+        table = model_table([
             ['ID', proj.id],
-            ['Name', self.format_project_name(proj)],
-            ['Description', self.format_project_description(proj)],
+            ['Name', format_project_name(proj)],
+            ['Description', format_project_description(proj)],
             ['Notes', proj.notes.count()],
         ])
         return table.format()
