@@ -30,12 +30,15 @@ class Command(BaseCommand):
         for proj in sort:
             if not proj.description:
                 tasks['descriptions'].append(ProjectAddDescription(proj))
+            if proj.notes.count() > 5:
+                tasks['merge_notes'].append(ProjectMergeNotes(proj))
         return tasks
 
     def format_tasks(self, tasks):
         headers = ['Task', 'Nb']
         data = [
             ['Add project description',  len(tasks['descriptions'])],
+            ['Merge notes in project',  len(tasks['merge_notes'])],
         ]
         rows = [headers_data(headers)]
         for label, value in data:
@@ -53,25 +56,27 @@ class Command(BaseCommand):
         s = "\n" + title + "\n" + "="*len(title) + "\n"
         self.stdout.write(s)
 
-    #def manage_project_descriptions(self):
-        #projs = Project.objects.filter(user_id=1, description='').all()
-        #sort = sorted(projs, key=lambda p: p.full_name())
-
-        #self.stdout.write("Managing Projects\n=================\n")
-
-        #for p in sort:
-            #desc = input("Enter a description for `%s`  (pass) " % p.full_name())
-            #if desc:
-                #p.description = desc
-                #p.save()
-
 
 class ProjectAddDescription(object):
     def __init__(self, proj):
         self.project = proj
 
     def perform(self):
+        # @fixme interactions
         desc = input("Enter a description for `%s`  (pass) " % self.project.full_name())
         if desc:
             self.project.description = desc
             self.project.save()
+
+
+class ProjectMergeNotes(object):
+    def __init__(self, proj):
+        self.project = proj
+
+    def perform(self):
+        pass
+        # @fixme interactions
+        #yes = input("Do you want to merge notes in `%s` (no) " % self.project.full_name())
+        #if yes:
+            #self.project.description = desc
+            #self.project.save()

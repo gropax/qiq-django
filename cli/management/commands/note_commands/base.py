@@ -6,6 +6,7 @@ from notes.models import Note
 from projects.models import Project
 from projects.helpers import parse_project_name, get_project, get_or_create_project, project_name_is_valid
 from cli.management.commands._subcommand import Subcommand
+import shlex
 
 
 VTAGS = ['ORIGINAL', 'DOCUMENT']
@@ -44,11 +45,13 @@ class NoteCommand(Subcommand):
             with open(f, 'w') as tmpf:
                 tmpf.write(text)
 
-        subprocess.call(['vim', f, '-c', 'startinsert'])  # '-u', 'NONE',
+        if options['editor']:
+            # @fixme Use custom editor command
+            cmd_str = options['editor'].replace('%', f)
+            subprocess.call(shlex.split(cmd_str))
+        else:
+            subprocess.call(['vim', f, '-c', 'startinsert'])  # '-u', 'NONE',
 
-        # @fixme Use custom editor command
-        #cmd = options['editor'].replace('%', f)
-        #subprocess.call(cmd)
 
         return f
 
@@ -107,6 +110,9 @@ class NoteCommand(Subcommand):
                 if default and self.ask_user('Use project `%s` ?' % default.name, default='yes'):
                     return default
                 name = self.prompt_project()
+
+            if not name:
+                return None
 
             if options['project'] and options['create_project']:
                 proj, _ = get_or_create_project(name)
