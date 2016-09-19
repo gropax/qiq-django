@@ -11,7 +11,7 @@ class NewCommand(NoteCommand):
     def add_arguments(self, parser):
         input_grp = parser.add_mutually_exclusive_group()
         input_grp.add_argument('-e', '--editor', type=str,
-                                default='vim % -u NONE -c startinsert',
+                                default=self.config('editor'),
                                 help='the command used to open the editor')
         input_grp.add_argument('-f', '--infile', type=FileType('r'),
                                 help='the file containing the text of the note')

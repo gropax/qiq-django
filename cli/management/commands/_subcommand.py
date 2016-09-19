@@ -4,12 +4,17 @@ from notes.models import Note
 from projects.helpers import project_name_is_valid
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
 from termblocks import TableBlock
+from cli.config import read_config_file
 
 
 class Subcommand(object):
     def __init__(self, cmd):
         self.cmd = cmd
 
+    def config(self, key):
+        if not hasattr(self, '_config'):
+            self._config = read_config_file()
+        return self._config[key]
 
     ###########################
     # Terminal output methods #

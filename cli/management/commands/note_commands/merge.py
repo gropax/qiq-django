@@ -8,9 +8,9 @@ class MergeCommand(NoteCommand):
     def add_arguments(self, parser):
         parser.add_argument('filters', nargs='+', type=str,
                             help='filters used to select the notes')
-        #input_grp.add_argument('-e', '--editor', type=str,
-                                #default='vim % -u NONE -c startinsert',
-                                #help='the command used to open the editor')
+        parser.add_argument('-e', '--editor', type=str,
+                                default=self.config('editor'),
+                                help='the command used to open the editor')
 
         proj_grp = parser.add_mutually_exclusive_group()
         proj_grp.add_argument('-p', '--project', type=str,

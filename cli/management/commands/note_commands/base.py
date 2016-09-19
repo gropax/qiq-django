@@ -12,7 +12,7 @@ import shlex
 VTAGS = ['ORIGINAL', 'DOCUMENT']
 
 IDS_re = re.compile(r'^\d+(?:,\d+)*$')
-PROJ_re = re.compile(r'^proj(?:ect)?:([a-z]+(?:\.[a-z]+)*)$')
+PROJ_re = re.compile(r'^proj(?:ect)?:([a-z]+(?:\/[a-z]+)*)$')
 VTAG_re = re.compile(r'^(\+|-)([A-Z]+)$')
 
 
@@ -107,7 +107,7 @@ class NoteCommand(Subcommand):
                 name = options['project']
                 self.check_project_name_is_valid(name)
             else:
-                if default and self.ask_user('Use project `%s` ?' % default.name, default='yes'):
+                if default and self.ask_user('Use project `%s` ?' % default.full_name(), default='yes'):
                     return default
                 name = self.prompt_project()
 
