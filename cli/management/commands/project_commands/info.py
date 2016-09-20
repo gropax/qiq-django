@@ -1,10 +1,8 @@
-from projects.models import Project
-from termblocks import TextBlock, TableBlock, MarginBlock, VerticalLayout
-from .base import ProjectCommand
-from cli.format import model_table, format_project_name, format_project_description, format_project_note_no
+from cli.management.commands._subcommand import Subcommand
+import cli.format as f
 
 
-class InfoCommand(ProjectCommand):
+class InfoCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('name_or_id', type=str,
                             help='the name or ID of the project (fully qualified)')
@@ -17,11 +15,11 @@ class InfoCommand(ProjectCommand):
         self.cmd.stdout.write(output)
 
     def format(self, proj):
-        table = model_table([
+        table = f.model_table([
             ['ID', proj.id],
-            ['Name', format_project_name(proj)],
-            ['Description', format_project_description(proj)],
-            ['Original notes', format_project_note_no(proj.notes.filter(original=True).count())],
+            ['Name', f.format_project_name(proj)],
+            ['Description', f.format_project_description(proj)],
+            ['Original notes', f.format_project_note_no(proj.notes.filter(original=True).count())],
             ['Old notes', proj.notes.filter(original=False).count()],
         ])
         return table.format()

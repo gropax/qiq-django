@@ -1,10 +1,9 @@
-from termblocks import TableBlock
+from cli.management.commands._subcommand import Subcommand
 from projects.models import Project
-from .base import ProjectCommand
-from cli.format import list_table, format_project_name, format_project_note_no
+import cli.format as f
 
 
-class ListCommand(ProjectCommand):
+class ListCommand(Subcommand):
     def add_arguments(self, parser):
         pass
 
@@ -20,14 +19,14 @@ class ListCommand(ProjectCommand):
         self.cmd.stdout.write(output)
 
     def format(self, projs):
-        headers = ['ID', 'Name', 'Notes', 'Description']
-        table = list_table(headers, projs, self.list_row_data)
+        headers = ['ID', 'Name', 'Original', 'Description']
+        table = f.list_table(headers, projs, self.list_row_data)
         return table.format()
 
     def list_row_data(self, proj):
         return [
             proj.id,
-            format_project_name(proj),
-            format_project_note_no(proj.notes.count()),
+            f.format_project_name(proj),
+            f.format_project_note_no(proj.notes.filter(original=True).count()),
             proj.description, # or '*',
         ]

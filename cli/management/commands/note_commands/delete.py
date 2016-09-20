@@ -1,9 +1,7 @@
-from django.core.management.base import BaseCommand, CommandParser, CommandError
-from notes.models import Note
-from .base import NoteCommand
+from cli.management.commands._subcommand import Subcommand
 
 
-class DeleteCommand(NoteCommand):
+class DeleteCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('filters', nargs='+', type=str,
                             help='filters used to select the notes')

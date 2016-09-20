@@ -1,7 +1,7 @@
-from .base import DocumentCommand
+from cli.management.commands._subcommand import Subcommand
 
 
-class NewCommand(DocumentCommand):
+class NewCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('name', type=str,
                             help='the name of the document (computer friendly)')

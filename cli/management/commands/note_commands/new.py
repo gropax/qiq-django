@@ -1,13 +1,10 @@
-import os
-from django.core.management.base import BaseCommand, CommandParser, CommandError
+from cli.management.commands._subcommand import Subcommand
 from argparse import FileType
-from projects.helpers import parse_project_name, get_or_create_project, get_project
 from notes.helpers import create_note
 from notes.models import Note
-from .base import NoteCommand
 
 
-class NewCommand(NoteCommand):
+class NewCommand(Subcommand):
     def add_arguments(self, parser):
         input_grp = parser.add_mutually_exclusive_group()
         input_grp.add_argument('-e', '--editor', type=str,

@@ -1,10 +1,9 @@
-from notes.models import Note
-from .base import NoteCommand
+from cli.management.commands._subcommand import Subcommand
 
 
 FIELDS = ['text']
 
-class GetCommand(NoteCommand):
+class GetCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('field', type=str, choices=FIELDS, help='the field to return')
         parser.add_argument('id', type=int, help='the ID of the note')

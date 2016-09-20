@@ -1,9 +1,9 @@
-from projects.models import Project
-from projects.helpers import get_project, get_or_create_project
-from .base import ProjectCommand
+from django.core.exceptions import ObjectDoesNotExist
+from cli.management.commands._subcommand import Subcommand
+import cli.utils.projects as prj
 
 
-class ModifyCommand(ProjectCommand):
+class ModifyCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('name_or_id', type=str,
                             help='the name or ID of the project (fully qualified)')
@@ -24,33 +24,17 @@ class ModifyCommand(ProjectCommand):
             self.check_project_name_is_valid(new_name)
             old_name = proj.full_name()
 
-            dest = get_project(new_name)
-            if dest:
-                # @fixme create #prompt_merge_projects
-                create = input('The project `%s` already exists. Merge projects ? (no) ' % new_name)
-                if create.lower() in ['', 'n', 'no']:
-                    exit(1)
-                else:
+            try:
+                dest = prj.get_by_fullname(new_name)
+                msg = 'The project `%s` already exists. Merge projects ?' % new_name
+                if self.ask(msg, 'no'):
                     merged = True
-                    # @fixme create #merge_projects
-                    for note in proj.notes.all():
-                        note.project = dest
-                        note.save()
-
-                    proj.delete()
-                    proj = dest
-            else:
-                # @fixme create #create_project_recursively
-                *parents, base_name = new_name.split('/')
-                parent_name = "/".join(parents)
-
-                if parent_name:
-                    parent, _ = get_or_create_project(parent_name)
+                    proj = prj.merge(proj, dest)
                 else:
-                    parent = None
+                    exit(1)
 
-                proj.name = base_name
-                proj.parent = parent
+            except ObjectDoesNotExist:
+                prj.rename(proj, new_name)
 
         desc = options['description']
         if desc and desc != proj.description:

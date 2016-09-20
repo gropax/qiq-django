@@ -1,10 +1,10 @@
-from termblocks import TableBlock
+from cli.management.commands._subcommand import Subcommand
 from notes.models import Document
-from .base import DocumentCommand
-from cli.format import list_table, format_project_name, format_document_title
+import termblocks as tb
+import cli.format as f
 
 
-class ListCommand(DocumentCommand):
+class ListCommand(Subcommand):
     def add_arguments(self, parser):
         pass
 
@@ -21,14 +21,14 @@ class ListCommand(DocumentCommand):
 
     def format(self, docs):
         headers = ['ID', 'Project', 'Name', 'NoteID', 'Title']
-        table = list_table(headers, docs, self.list_row_data)
+        table = f.list_table(headers, docs, self.list_row_data)
         return table.format()
 
     def list_row_data(self, doc):
         return [
             doc.id,
-            format_project_name(doc.note.project),
+            f.format_project_name(doc.note.project),
             doc.name,
             doc.note.id,
-            format_document_title(doc),
+            f.format_document_title(doc),
         ]

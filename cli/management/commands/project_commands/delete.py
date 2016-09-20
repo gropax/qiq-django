@@ -1,9 +1,7 @@
-import sys
-from projects.models import Project
-from .base import ProjectCommand
+from cli.management.commands._subcommand import Subcommand
 
 
-class DeleteCommand(ProjectCommand):
+class DeleteCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('name_or_id', type=str, help='the name or the id of the project')
 

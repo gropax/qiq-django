@@ -1,9 +1,7 @@
-import sys
-from notes.models import Document
-from .base import DocumentCommand
+from cli.management.commands._subcommand import Subcommand
 
 
-class ModifyCommand(DocumentCommand):
+class ModifyCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('name_or_id', type=str, help='the name or the id of the document')
         parser.add_argument('-d', '--description', type=str,
@@ -33,20 +31,3 @@ class ModifyCommand(DocumentCommand):
             self.success_document_modified(doc, old_name, desc_mod)
         else:
             self.warning_nothing_to_do()
-
-
-    ###########################
-    # Terminal output methods #
-    ###########################
-
-    def success_document_modified(self, doc, old_name, desc_mod):
-        if old_name:
-            if desc_mod:
-                s = "Document `%s` renamed to `%s` and modified" % (old_name, doc.name)
-            else:
-                s = "Document `%s` renamed to `%s`" % (old_name, doc.name)
-        else:
-            if desc_mod:
-                s = "Document `%s` modified" % doc.name
-
-        self.success(s)

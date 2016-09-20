@@ -1,10 +1,9 @@
-from notes.models import Note
-from termblocks import TextBlock, MarginBlock, VerticalLayout
-from cli.format import model_table
-from .base import DocumentCommand
+from cli.management.commands._subcommand import Subcommand
+import termblocks as tb
+import cli.format as f
 
 
-class InfoCommand(DocumentCommand):
+class InfoCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('name_or_id', type=str, help='the name or the id of the document')
 
@@ -17,16 +16,16 @@ class InfoCommand(DocumentCommand):
 
     def format(self, doc):
         note = doc.note
-        table = model_table([
+        table = f.model_table([
             ['ID', doc.id],
             ['Username', note.user.username],
-            ['Project', self.format_project_name(note.project)],
+            ['Project', f.format_project_name(note.project)],
             ['Name', doc.name],
-            ['Created', self.format_creation_date(doc)],
+            ['Created', f.format_creation_date(doc)],
             ['Rank', note.rank],
         ])
-        text = TextBlock(note.text)
-        margin = MarginBlock(text, left=4, right=4, top=1, bottom=1)
-        vlayout = VerticalLayout([table, margin])
+        text = tb.TextBlock(note.text)
+        margin = tb.MarginBlock(text, left=4, right=4, top=1, bottom=1)
+        vlayout = tb.VerticalLayout([table, margin])
 
         return vlayout.format()

@@ -1,16 +1,16 @@
+from cli.management.commands._subcommand import Subcommand
 from notes.models import Note
 from notes.helpers import merge_notes
-from .base import NoteCommand
 from math import ceil
 import difflib
 
 
-class SplitCommand(NoteCommand):
+class SplitCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('id', type=int, help='the ID of the note')
-        #input_grp.add_argument('-e', '--editor', type=str,
-                                #default='vim % -u NONE -c startinsert',
-                                #help='the command used to open the editor')
+        parser.add_argument('-e', '--editor', type=str,
+                                default=self.config('editor'),
+                                help='the command used to open the editor')
 
         proj_grp = parser.add_mutually_exclusive_group()
         proj_grp.add_argument('-p', '--project', type=str,

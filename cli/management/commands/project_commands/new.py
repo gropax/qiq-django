@@ -1,9 +1,8 @@
+from cli.management.commands._subcommand import Subcommand
 from projects.models import Project
-from projects.helpers import parse_project_name, get_or_create_project, get_project
-from .base import ProjectCommand
 
 
-class NewCommand(ProjectCommand):
+class NewCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('name', type=str,
                             help='the name of the project (computer friendly)')

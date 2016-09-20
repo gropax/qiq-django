@@ -1,9 +1,7 @@
-import sys
-from notes.models import Document
-from .base import DocumentCommand
+from cli.management.commands._subcommand import Subcommand
 
 
-class DeleteCommand(DocumentCommand):
+class DeleteCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('name_or_id', type=str, help='the name or the id of the document')
 
