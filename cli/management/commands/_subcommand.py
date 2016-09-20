@@ -1,7 +1,11 @@
 import sys
 import re
+import readline
+import tempfile
+import subprocess
 from django.core.exceptions import ObjectDoesNotExist
 from notes.models import Document, Note
+from projects.models import Project
 #from projects.helpers import project_name_is_valid
 import cli.utils.projects as prj
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
@@ -67,7 +71,7 @@ class Subcommand(object):
             if options['project'] and options['create_project']:
                 proj, _ = prj.get_or_create_project(name)
             else:
-                proj = prj.get_project(name)
+                proj = prj.get_by_fullname(name)
                 if not proj:
                     if self.ask('Create it ?', default='yes'):
                         proj, _ = prj.get_or_create_project(name)
@@ -97,7 +101,7 @@ class Subcommand(object):
             name = input('Project: ')
             if not name:
                 return None
-            elif prj.project_name_is_valid(name):
+            elif prj.name_is_valid(name):
                 return name
             else:
                 self.error_invalid_project_name(name, interactive=True)
