@@ -6,8 +6,10 @@ import subprocess
 from django.core.exceptions import ObjectDoesNotExist
 from notes.models import Document, Note
 from projects.models import Project
+from languages.models import Language
 #from projects.helpers import project_name_is_valid
 import cli.utils.projects as prj
+import languages.utils as lang
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
 from termblocks import TableBlock
 from cli.config import read_config_file
@@ -238,6 +240,18 @@ class Subcommand(object):
         self.not_found("Invalid document name or id: %s" % name_or_id)
 
 
+    # Language
+    #
+    def success_language_created(self, language):
+        self.success('Created language `%s`' % language.code)
+
+    def error_invalid_language_code(self, code, interactive=False):
+        self.invalid("Invalid language code: %s" % code, interactive=False)
+
+    def error_language_already_exists(self, code):
+        self.already_exists("Language `%s` already exists" % code)
+
+
 
     ###############################
     # Find models or return error #
@@ -308,6 +322,13 @@ class Subcommand(object):
             return
         self.error_document_already_exists(name)
 
+    def check_language_code_is_valid(self, code):
+        if not lang.code_is_valid(code):
+            self.error_invalid_language_code(code)
+
+    def check_language_does_not_exist(self, code):
+        if Language.objects.filter(code=code).count():
+            self.error_language_already_exists(code)
 
 
 

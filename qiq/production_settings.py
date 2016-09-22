@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'projects.apps.ProjectsConfig',
     'notes.apps.NotesConfig',
+    'languages.apps.LanguagesConfig',
     'cli.apps.CLIConfig',
 ]
 
