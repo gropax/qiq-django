@@ -8,6 +8,8 @@ class NewCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('lang', type=str, help='the iso-3 language code (ex: fra)')
         parser.add_argument('pattern', type=str, help='the pattern description')
+        parser.add_argument('-l', '--lemma', type=str,
+                            help='use given lemma instead of guessing it')
         parser.add_argument('-f', '--force-lemma', action='store_true', default=False,
                             help='create lemma if it does not exist')
 
@@ -24,7 +26,11 @@ class NewCommand(Subcommand):
         self.check_lexical_pattern_does_not_exist(desc, lang_cfg)
 
         pat = lex.parse_pattern(desc)
-        lemma = pat.lexical_unit(lang_cfg)
+
+        if options['lemma']:
+            lemma = options['lemma']
+        else:
+            lemma = pat.lexical_unit(lang_cfg)
 
         q = LexicalUnit.objects.filter(user_id=1, language=language, lemma=lemma)
         if q.count():

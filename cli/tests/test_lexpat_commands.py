@@ -15,6 +15,11 @@ class NewCommand(TestCase):
         lang = Language(code='fra', name='French'); lang.save()
         self.assert_status(SUCCESS, 'lexpat', 'new', 'fra', 'X *donner* Y à Z_hum', '--force-lemma')
 
+    def test_created_specifying_lexical_unit(self):
+        lang = Language(code='fra', name='French'); lang.save()
+        unit = LexicalUnit(user_id=1, language=lang, lemma='manger'); unit.save()
+        self.assert_status(SUCCESS, 'lexpat', 'new', 'fra', 'X *donner* Y à Z_hum', '-l', 'manger')
+
     def test_error_already_exist(self):
         User(id=1, username='maxime').save()
         lang = Language(code='fra', name='French'); lang.save()
