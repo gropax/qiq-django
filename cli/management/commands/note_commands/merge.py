@@ -9,6 +9,8 @@ class MergeCommand(Subcommand):
         parser.add_argument('-e', '--editor', type=str,
                                 default=self.config().get('editor'),
                                 help='the command used to open the editor')
+        parser.add_argument('-q', '--quick-merge', action='store_true',
+                                help='merge notes without editing')
 
         proj_grp = parser.add_mutually_exclusive_group()
         proj_grp.add_argument('-p', '--project', type=str,
@@ -26,11 +28,12 @@ class MergeCommand(Subcommand):
 
         proj = self.get_or_prompt_project(options, default=self.default_project(notes))
 
-        text = "\n\n".join(note.text for note in notes)
-        f = self.edit_note_in_editor(options, text=text)
+        text = "\n\n".join(note.text.strip() for note in notes)
 
-        with open(f, 'r') as file:
-            text = file.read()
+        if not options['quick_merge']:
+            f = self.edit_note_in_editor(options, text=text)
+            with open(f, 'r') as file:
+                text = file.read()
 
         if text:
             note = merge_notes(proj, text, notes)

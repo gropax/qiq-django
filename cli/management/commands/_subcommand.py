@@ -79,14 +79,15 @@ class Subcommand(object):
                 return None
 
             if options['project'] and options['create_project']:
-                proj, _ = prj.get_or_create_project(name)
+                proj, _ = prj.get_or_create_recursively(name)
             else:
-                proj = prj.get_by_fullname(name)
-                if not proj:
-                    if self.ask('Create it ?', default='yes'):
-                        proj, _ = prj.get_or_create_project(name)
+                try:
+                    proj = prj.get_by_fullname(name)
+                except ObjectDoesNotExist:
+                    if self.ask('Project `%s` does not exist. Create it ?' % name, default='yes'):
+                        proj, _ = prj.get_or_create_recursively(name)
                     else:
-                        exit(1)
+                        self.warning_operation_aborted()
         return proj
 
     def set_project_autocomplete(self):
@@ -171,6 +172,9 @@ class Subcommand(object):
 
     def warning_nothing_to_do(self):
         self.warning("Nothing to do")
+
+    def warning_operation_aborted(self):
+        self.warning("Operation aborted")
 
 
     # Projects

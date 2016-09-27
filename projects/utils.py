@@ -18,10 +18,10 @@ def get_by_name_recursively(names):
 
     return proj
 
-def get_or_create_recursively(name, desc=''):
+def get_or_create_recursively(names, desc=''):
     proj, created, parent_id = None, None, None
 
-    for name in parse_project_name(name):
+    for name in names:
         proj, created = Project.objects.get_or_create(user_id=1, parent_id=parent_id, name=name)
         parent_id = proj.id
 

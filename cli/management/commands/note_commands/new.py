@@ -32,7 +32,7 @@ class NewCommand(Subcommand):
             proj = self.get_or_prompt_project(options)
 
         if options['infile']:
-            f = options['infile']
+            f = options['infile'].name
         else:
             f = self.edit_note_in_editor(options)
 

@@ -13,7 +13,7 @@ class ListCommand(Subcommand):
         self.check_language_code_is_valid(lang)
         self.check_language_exists(lang)
 
-        self.cfg = self.config().get('languages').get(lang)
+        self.cfg = self.config().get('languages').get(lang, {})
 
         pats = LexicalPattern.objects.filter(lexical_unit__language=lang) \
                                      .order_by('lexical_unit__lemma')
