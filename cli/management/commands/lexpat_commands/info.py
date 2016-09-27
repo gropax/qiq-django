@@ -1,25 +1,36 @@
 from cli.management.commands._subcommand import Subcommand
+import termblocks as tb
+from lexical_units.models import LexicalPattern
+import lexical_units.utils as lex
 import cli.format as f
 
 
 class InfoCommand(Subcommand):
     def add_arguments(self, parser):
-        parser.add_argument('name_or_id', type=str,
-                            help='the name or ID of the project (fully qualified)')
+        parser.add_argument('id', type=int, help='the id of the lexical pattern')
 
     def execute(self, args, options):
-        name_or_id = options['name_or_id']
-        proj = self.find_project_by_name_or_id_or_error(name_or_id)
+        pat_id = options['id']
 
-        output = self.format(proj)
+        q = LexicalPattern.objects.filter(id=pat_id)
+        if not q.count():
+            self.error_lexical_pattern_not_found(pat_id)
+
+        pat = q.first()
+
+        lang = pat.lexical_unit.language.code
+        self.cfg = self.config().get('languages').get(lang)
+
+        output = self.format(pat)
         self.cmd.stdout.write(output)
 
-    def format(self, proj):
+    def format(self, pat):
         table = f.model_table([
-            ['ID', proj.id],
-            ['Name', f.format_project_name(proj)],
-            ['Description', f.format_project_description(proj)],
-            ['Original notes', f.format_project_note_no(proj.notes.filter(original=True).count())],
-            ['Old notes', proj.notes.filter(original=False).count()],
+            ['ID', pat.id],
+            ['Username', pat.lexical_unit.user.username],
+            ['Language', f.format_language(pat.lexical_unit.language)],
+            ['Lemma', pat.lexical_unit.lemma],
+            ['Created', f.format_creation_date(pat)],
+            ['Pattern', lex.parse_pattern(pat.description).format_termblock(self.cfg)],
         ])
         return table.format()

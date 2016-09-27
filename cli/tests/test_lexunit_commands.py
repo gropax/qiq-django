@@ -1,7 +1,8 @@
 from qiq.test import TestCase
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
+from django.contrib.auth.models import User
 from languages.models import Language
-from lexical_units.models import LexicalUnit
+from lexical_units.models import LexicalUnit, LexicalPattern
 
 
 class NewCommand(TestCase):
@@ -55,12 +56,14 @@ class ModifyCommand(TestCase):
         self.assert_status(NOT_FOUND, 'lexunit', 'delete', 123)
 
 
-#class InfoCommand(TestCase):
-    #def test_success(self):
-        #proj = Project(user_id=1, name='abc'); proj.save()
-        #self.assert_status(SUCCESS, 'project', 'info', proj.id)
-        #self.assert_status(SUCCESS, 'project', 'info', proj.name)
+class InfoCommand(TestCase):
+    def test_success(self):
+        User(id=1, username='maxime').save()
+        lang = Language(code='fra', name='French'); lang.save()
+        unit = LexicalUnit(user_id=1, language=lang, lemma='donner'); unit.save()
+        pat  = LexicalPattern(lexical_unit=unit, description='X *donner* Y'); pat.save()
+        pat  = LexicalPattern(lexical_unit=unit, description='X *donner* Y à Z_hum'); pat.save()
+        self.assert_status(SUCCESS, 'lexunit', 'info', unit.id)
 
-    #def test_error_not_found(self):
-        #self.assert_status(NOT_FOUND, 'project', 'info', 123)
-        #self.assert_status(NOT_FOUND, 'project', 'info', 'myproj')
+    def test_error_not_found(self):
+        self.assert_status(NOT_FOUND, 'lexunit', 'info', 123)

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from projects.models import Project
 import notes
+import core.utils
 #from notes.helpers import age
 #import notes.helpers
 
@@ -23,7 +24,7 @@ class Note(models.Model):
         return self.text[:50] + ('...' if l > 50 else '')
 
     def age(self):
-        return notes.helpers.age(self.created)
+        return core.utils.age(self.created)
 
 
 class Document(models.Model):

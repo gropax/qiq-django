@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from languages.models import Language
+import core.utils
 
 
 class LexicalUnit(models.Model):
@@ -12,6 +13,9 @@ class LexicalUnit(models.Model):
     lemma = models.CharField(max_length=80)
     created = models.DateTimeField(auto_now_add=True)
 
+    def age(self):
+        return core.utils.age(self.created)
+
 
 class LexicalPattern(models.Model):
     lexical_unit = models.ForeignKey(LexicalUnit, on_delete=models.CASCADE,
@@ -19,6 +23,9 @@ class LexicalPattern(models.Model):
 
     description = models.CharField(max_length=200)
     created = models.DateTimeField(auto_now_add=True)
+
+    def age(self):
+        return core.utils.age(self.created)
 
 
 #class LexicalFunction(models.Model):

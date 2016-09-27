@@ -58,8 +58,8 @@ class SynArg(object):
         traits_opts = opts.get('traits', {})
         display_traits = list(self.traits)
 
-        t = next(t for t in self.traits if t in traits_opts)
-        if t:
+        try:
+            t = next(t for t in self.traits if t in traits_opts)
             t_opt = traits_opts.get(t)
             fg = t_opt.get('fgcolor', None)
             bg = t_opt.get('bgcolor', None)
@@ -68,7 +68,7 @@ class SynArg(object):
 
             if not t_opt.get('keep', False):
                 display_traits.remove(t)
-        else:
+        except StopIteration:
             fg, bg, style = None, None, []
 
         options = {'color': fg, 'background': bg, 'style': style}

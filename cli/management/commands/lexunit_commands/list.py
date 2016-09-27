@@ -22,7 +22,7 @@ class ListCommand(Subcommand):
 
     def format(self, units):
         #headers = ['ID', 'Lang', 'Cat', 'Lemma']
-        headers = ['ID', 'Lang', 'Lemma']
+        headers = ['ID', 'Lang', 'Pat', 'Lemma']
         table = f.list_table(headers, units, self.list_row_data)
         return table.format()
 
@@ -30,6 +30,7 @@ class ListCommand(Subcommand):
         return [
             unit.id,
             unit.language.code,
+            unit.patterns.count(),
             #unit.category,
             unit.lemma,
         ]

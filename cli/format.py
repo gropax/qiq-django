@@ -109,3 +109,6 @@ def format_project_note_no(n):
         color = 'red'
 
     return [str(n), {'color': color, 'style': ['bold']}]
+
+def format_language(lang):
+    return "%s (%s)" % (lang.name, lang.code)

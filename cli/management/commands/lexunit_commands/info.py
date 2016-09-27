@@ -1,25 +1,50 @@
 from cli.management.commands._subcommand import Subcommand
+import termblocks as tb
+from lexical_units.models import LexicalUnit
+import lexical_units.utils as lex
 import cli.format as f
 
 
 class InfoCommand(Subcommand):
     def add_arguments(self, parser):
-        parser.add_argument('name_or_id', type=str,
-                            help='the name or ID of the project (fully qualified)')
+        parser.add_argument('id', type=int, help='the id of the lexical unit')
 
     def execute(self, args, options):
-        name_or_id = options['name_or_id']
-        proj = self.find_project_by_name_or_id_or_error(name_or_id)
+        unit_id = options['id']
 
-        output = self.format(proj)
+        q = LexicalUnit.objects.filter(id=unit_id)
+        if not q.count():
+            self.error_lexical_entry_not_found(unit_id)
+
+        unit = q.first()
+
+        lang = unit.language.code
+        self.cfg = self.config().get('languages').get(lang)
+
+        output = self.format(unit)
         self.cmd.stdout.write(output)
 
-    def format(self, proj):
+    def format(self, unit):
         table = f.model_table([
-            ['ID', proj.id],
-            ['Name', f.format_project_name(proj)],
-            ['Description', f.format_project_description(proj)],
-            ['Original notes', f.format_project_note_no(proj.notes.filter(original=True).count())],
-            ['Old notes', proj.notes.filter(original=False).count()],
+            ['ID', unit.id],
+            ['Username', unit.user.username],
+            ['Language', f.format_language(unit.language)],
+            ['Created', f.format_creation_date(unit)],
+            ['Lemma', unit.lemma],
+            ['Patterns', unit.patterns.count()],
         ])
-        return table.format()
+
+        text = tb.ColorTextBlock(self.format_colored(unit.patterns.all()))
+        vlayout = tb.VerticalLayout([table, text])
+        #margin = tb.MarginBlock(text, left=4, right=4, top=1, bottom=1)
+        #vlayout = tb.VerticalLayout([table, margin])
+
+        return vlayout.format()
+
+    def format_colored(self, patterns):
+        pats = [lex.parse_pattern(p.description) for p in patterns]
+        colored = pats[0].format_termblock(self.cfg)
+        for p in pats[1:]:
+            colored.append({'text': '\n'})
+            colored += p.format_termblock(self.cfg)
+        return colored

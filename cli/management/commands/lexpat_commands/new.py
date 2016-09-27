@@ -8,6 +8,8 @@ class NewCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('lang', type=str, help='the iso-3 language code (ex: fra)')
         parser.add_argument('pattern', type=str, help='the pattern description')
+        parser.add_argument('-f', '--force-lemma', action='store_true', default=False,
+                            help='create lemma if it does not exist')
 
     def execute(self, args, options):
         lang = options['lang']
@@ -26,7 +28,8 @@ class NewCommand(Subcommand):
         if q.count():
             unit = q.first()
         else:
-            if self.ask("Lexical unit `%s` doesn't exist. Create it ?" % lemma, default='yes'):
+            if options['force_lemma'] or \
+              self.ask("Lexical unit `%s` doesn't exist. Create it ?" % lemma, default='yes'):
                 unit = LexicalUnit(user_id=1, language=language, lemma=lemma)
                 unit.save()
             else:

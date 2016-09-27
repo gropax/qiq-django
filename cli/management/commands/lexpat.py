@@ -3,7 +3,7 @@ from .lexpat_commands.new import NewCommand
 from .lexpat_commands.list import ListCommand
 from .lexpat_commands.modify import ModifyCommand
 from .lexpat_commands.delete import DeleteCommand
-#from .lexpat_commands.info import InfoCommand
+from .lexpat_commands.info import InfoCommand
 
 
 def parser_class(cmd):
@@ -19,7 +19,7 @@ SUBCOMMANDS = {
     'list': ListCommand,
     'modify': ModifyCommand,
     'delete': DeleteCommand,
-    #'info': InfoCommand,
+    'info': InfoCommand,
 }
 class Command(BaseCommand):
     help = 'Manage lexical units'
