@@ -7,7 +7,7 @@ class MergeCommand(Subcommand):
         parser.add_argument('filters', nargs='+', type=str,
                             help='filters used to select the notes')
         parser.add_argument('-e', '--editor', type=str,
-                                default=self.config('editor'),
+                                default=self.config().get('editor'),
                                 help='the command used to open the editor')
 
         proj_grp = parser.add_mutually_exclusive_group()

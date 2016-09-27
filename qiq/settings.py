@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'projects.apps.ProjectsConfig',
     'notes.apps.NotesConfig',
     'languages.apps.LanguagesConfig',
+    'lexical_units.apps.LexicalUnitsConfig',
     'cli.apps.CLIConfig',
 ]
 

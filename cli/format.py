@@ -50,13 +50,17 @@ def list_table(headers, models, format_proc):
 
 def format_cell(value):
     if type(value) is list:
-        val, opts = value
+        fst = value[0]
+        if isinstance(fst, dict):
+            val, opts = value, {}
+        else:
+            val, opts = str(value[0]), value[1]
     else:
-        val, opts = value, {}
+        val, opts = str(value), {}
     return cell_data(val, opts)
 
 def cell_data(text, options={}):
-    cell = {'text': str(text)}
+    cell = {'text': text}
     if options: cell['options'] = options
     return cell
 

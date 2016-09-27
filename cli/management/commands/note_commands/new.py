@@ -8,7 +8,7 @@ class NewCommand(Subcommand):
     def add_arguments(self, parser):
         input_grp = parser.add_mutually_exclusive_group()
         input_grp.add_argument('-e', '--editor', type=str,
-                                default=self.config('editor'),
+                                default=self.config().get('editor'),
                                 help='the command used to open the editor')
         input_grp.add_argument('-f', '--infile', type=FileType('r'),
                                 help='the file containing the text of the note')

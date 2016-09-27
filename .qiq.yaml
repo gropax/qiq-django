@@ -1,0 +1,24 @@
+# Enter configuration here
+editor: vim % -u /home/maxime/global-config/vim-config/nvim/init-light.vim -c 'startinsert' --noplugin
+
+languages:
+  fra:
+    separator: ' '
+    lexical_units:
+      fgcolor: null
+      bgcolor: null
+      style:
+        - bold
+    traits:
+      nom:
+        fgcolor: green
+        style:
+          - bold
+      acc:
+        fgcolor: blue
+        style:
+          - bold
+      dat:
+        fgcolor: red
+        style:
+          - bold

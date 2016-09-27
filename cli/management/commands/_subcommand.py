@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from notes.models import Document, Note
 from projects.models import Project
 from languages.models import Language
+from lexical_units.models import LexicalUnit
 #from projects.helpers import project_name_is_valid
 import cli.utils.projects as prj
 import languages.utils as lang
@@ -31,10 +32,15 @@ class Subcommand(object):
     def __init__(self, cmd):
         self.cmd = cmd
 
-    def config(self, key):
+    #def config(self, key):
+        #if not hasattr(self, '_config'):
+            #self._config = read_config_file()
+        #return self._config[key]
+
+    def config(self):
         if not hasattr(self, '_config'):
             self._config = read_config_file()
-        return self._config[key]
+        return self._config
 
 
     ################################
@@ -251,6 +257,38 @@ class Subcommand(object):
     def error_language_already_exists(self, code):
         self.already_exists("Language `%s` already exists" % code)
 
+    def error_language_does_not_exist(self, code):
+        self.not_found("Language `%s` does not exists" % code)
+
+
+    # LexicalUnit
+    #
+    def error_lemma_already_exists(self, unit):
+        self.already_exists("Lemma `%s` already exists in language `%s`" % (unit.lemma, unit.language))
+
+    def success_lexical_unit_created(self, unit):
+        self.success('Created lexical unit `%i` in language `%s`' % (unit.id, unit.language.code))
+
+    def success_lexical_unit_modified(self, unit):
+        self.success('Modified lexical unit `%i`' % unit.id)
+
+    def success_lexical_unit_deleted(self, id):
+        self.success('Deleted lexical unit `%i`' % id)
+
+    def error_lexical_entry_not_found(self, id):
+        self.not_found("Lexical unit `%i` does not exists" % id)
+
+    def success_lexical_pattern_created(self, pat):
+        self.success('Created lexical pattern `%i` for entry `%s`' % (pat.id, pat.lexical_unit.lemma))
+
+    def error_lexical_pattern_not_found(self, pat_id):
+        self.not_found("Lexical pattern `%i` does not exists" % pat_id)
+
+    def success_lexical_pattern_modified(self, pat):
+        self.success('Modified lexical pattern `%i`' % pat.id)
+
+    def success_lexical_pattern_deleted(self, pat_id):
+        self.success('Deleted lexical pattern `%i`' % pat_id)
 
 
     ###############################
@@ -326,9 +364,18 @@ class Subcommand(object):
         if not lang.code_is_valid(code):
             self.error_invalid_language_code(code)
 
+    def check_language_exists(self, code):
+        if not Language.objects.filter(code=code).count():
+            self.error_language_does_not_exist(code)
+
     def check_language_does_not_exist(self, code):
         if Language.objects.filter(code=code).count():
             self.error_language_already_exists(code)
+
+    def check_lemma_does_not_exist(self, lang, lemma):
+        q = LexicalUnit.objects.filter(language=lang, lemma=lemma)
+        if q.count():
+            self.error_lemma_already_exists(q.first())
 
 
 

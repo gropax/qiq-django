@@ -9,7 +9,7 @@ class SplitCommand(Subcommand):
     def add_arguments(self, parser):
         parser.add_argument('id', type=int, help='the ID of the note')
         parser.add_argument('-e', '--editor', type=str,
-                                default=self.config('editor'),
+                                default=self.config().get('editor'),
                                 help='the command used to open the editor')
 
         proj_grp = parser.add_mutually_exclusive_group()
