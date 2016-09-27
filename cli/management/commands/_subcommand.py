@@ -4,10 +4,12 @@ import readline
 import tempfile
 import subprocess
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 from notes.models import Document, Note
 from projects.models import Project
 from languages.models import Language
-from lexical_units.models import LexicalUnit
+from lexical_units.models import LexicalUnit, LexicalPattern
+import lexical_units.utils as lex
 #from projects.helpers import project_name_is_valid
 import cli.utils.projects as prj
 import languages.utils as lang
@@ -290,6 +292,9 @@ class Subcommand(object):
     def success_lexical_pattern_deleted(self, pat_id):
         self.success('Deleted lexical pattern `%i`' % pat_id)
 
+    def error_lexical_pattern_already_exists(self, desc):
+        self.already_exists("Lexical pattern already exists: %s" % desc)
+
 
     ###############################
     # Find models or return error #
@@ -378,7 +383,6 @@ class Subcommand(object):
             self.error_lemma_already_exists(q.first())
 
 
-
     def filter_notes(self, filters):
         q = self.filter_query(filters)
         return Note.objects.filter(**q)
@@ -411,7 +415,8 @@ class Subcommand(object):
         if ids: q['id__in'] = list(ids)
 
         if proj_name:
-            proj = prj.get_project(proj_name)
+            #proj = prj.get_project(proj_name)
+            proj = prj.get_by_fullname(proj_name)
             if proj:
                 q['project'] = proj
             else:

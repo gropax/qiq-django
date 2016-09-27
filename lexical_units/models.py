@@ -16,12 +16,15 @@ class LexicalUnit(models.Model):
     def age(self):
         return core.utils.age(self.created)
 
+    class Meta:
+        unique_together = ('user', 'language', 'lemma')
+
 
 class LexicalPattern(models.Model):
     lexical_unit = models.ForeignKey(LexicalUnit, on_delete=models.CASCADE,
                                      related_name='patterns')
 
-    description = models.CharField(max_length=200)
+    description = models.CharField(max_length=200, unique=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def age(self):

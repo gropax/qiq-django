@@ -17,11 +17,13 @@ class NewCommand(Subcommand):
         self.check_language_exists(lang)
 
         cfg = self.config()
-
         language = Language.objects.get(code=lang)
         lang_cfg = cfg.get('languages').get(lang)
 
-        pat = lex.parse_pattern(options['pattern'])
+        desc = options['pattern']
+        self.check_lexical_pattern_does_not_exist(desc, lang_cfg)
+
+        pat = lex.parse_pattern(desc)
         lemma = pat.lexical_unit(lang_cfg)
 
         q = LexicalUnit.objects.filter(user_id=1, language=language, lemma=lemma)
@@ -39,3 +41,11 @@ class NewCommand(Subcommand):
         lexpat.save()
 
         self.success_lexical_pattern_created(lexpat)
+
+    def check_lexical_pattern_does_not_exist(self, desc, cfg):
+        pat = lex.parse_pattern(desc)
+        q = LexicalPattern.objects.filter(lexical_unit__lemma=pat.lexical_unit(cfg),
+                                          lexical_unit__user_id=1,
+                                          description=desc)
+        if q.count():
+            self.error_lexical_pattern_already_exists(desc)

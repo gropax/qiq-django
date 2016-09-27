@@ -1,6 +1,7 @@
 from qiq.test import TestCase
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
 from notes.models import Note
+from projects.models import Project
 from django.contrib.auth.models import User
 
 
@@ -27,6 +28,10 @@ class ListCommand(TestCase):
         User(username='auie').save()
         note = Note(user_id=1, text='abc', original=True); note.save()
         self.assert_status(SUCCESS, 'note', 'list')
+
+        prj = Project(user_id=1, name='myproject'); prj.save()
+        note = Note(user_id=1, project=prj, text='abc', original=True); note.save()
+        self.assert_status(SUCCESS, 'note', 'list', 'proj:myproject')
 
     def test_error_no_match(self):
         self.assert_status(NOT_FOUND, 'note', 'list')
