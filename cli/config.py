@@ -40,6 +40,8 @@ class Config(object):
                 return Config(val)
             else:
                 return val
+        elif default == {}:
+            return Config()
         else:
             return default
 

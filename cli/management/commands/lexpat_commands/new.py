@@ -20,7 +20,7 @@ class NewCommand(Subcommand):
 
         cfg = self.config()
         language = Language.objects.get(code=lang)
-        lang_cfg = cfg.get('languages').get(lang)
+        lang_cfg = cfg.get('languages').get(lang, {})
 
         desc = options['pattern']
         self.check_lexical_pattern_does_not_exist(desc, lang_cfg)
