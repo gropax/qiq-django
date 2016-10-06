@@ -71,7 +71,7 @@ class Subcommand(object):
                 name = options['project']
                 self.check_project_name_is_valid(name)
             else:
-                if default and self.ask_user('Use project `%s` ?' % default.full_name(), default='yes'):
+                if default and self.ask('Use project `%s` ?' % default.full_name(), default='yes'):
                     return default
                 name = self.prompt_project()
 

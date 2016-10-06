@@ -20,7 +20,7 @@ def rename(proj, new_name):
     parent_name = PROJECT_SEPARATOR.join(parents)
 
     if parent_name:
-        parent, _ = get_or_create_project(parent_name)
+        parent, _ = get_or_create_recursively(parent_name)
     else:
         parent = None
 
