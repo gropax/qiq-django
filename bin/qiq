@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+
+#import pprint
+#pp = pprint.PrettyPrinter(indent=4)
+
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+QIQ_PATH = os.path.dirname(dir_path)
+if not QIQ_PATH in sys.path:
+    sys.path.append(QIQ_PATH)
+
+from core.cli.commands.qiq import QiqCommand
+
+QiqCommand().execute()
+
+# Add ../.. to python path
+# Load django
+# Load core command
+# Execute it
+
+
+# vim: set filetype=python:
