@@ -1,6 +1,8 @@
+import readline
 from django.core.exceptions import ObjectDoesNotExist
 from core.cli.utils import Utils as Base
 import cli.utils.projects as prj
+from projects.models import Project
 
 
 class Utils(Base):
@@ -35,12 +37,12 @@ class Utils(Base):
 
     # Projects
     #
-    def get_or_prompt_project(self, options, default=None):
-        if options['no_project']:
+    def get_or_prompt_project(self, args, default=None):
+        if args.no_project:
             proj = None
         else:
-            if options['project']:
-                name = options['project']
+            if args.project:
+                name = args.project
                 self.check_project_name_is_valid(name)
             else:
                 if default and self.ask('Use project `%s` ?' % default.full_name(), default='yes'):
@@ -50,7 +52,7 @@ class Utils(Base):
             if not name:
                 return None
 
-            if options['project'] and options['create_project']:
+            if args.project and args.create_project:
                 proj, _ = prj.get_or_create_recursively(name)
             else:
                 try:
@@ -93,4 +95,25 @@ class Utils(Base):
     def check_project_name_is_valid(self, name):
         if not prj.name_is_valid(name):
             self.error_invalid_project_name(name)
+
+
+
+class AutoCompleter(object):
+    def __init__(self, options):
+        self.options = sorted(options)
+
+    def complete(self, text, state):
+        if state == 0:  # on first trigger, build possible matches
+            if text:  # cache matches (entries that start with entered text)
+                self.matches = [s for s in self.options
+                                  if s and s.startswith(text)]
+            else:  # no text entered, all matches possible
+                self.matches = self.options[:]
+
+        # return match indexed by state
+        try:
+            return self.matches[state]
+        except IndexError:
+            return None
+
 

@@ -4,6 +4,8 @@ from io import StringIO
 from core.cli.commands.qiq import QiqCommand
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
 from io import StringIO
+import tempfile
+
 
 
 class TestCase(django.test.TestCase):
@@ -33,3 +35,9 @@ class TestCase(django.test.TestCase):
 
     def assert_not_found(self, *cmd):
         self.assertEqual(NOT_FOUND, self.qiq(*cmd))
+
+    def dummy_file(self, text='abc'):
+        _, path = tempfile.mkstemp()
+        with open(path, 'w') as f:
+            f.write(text)
+        return path

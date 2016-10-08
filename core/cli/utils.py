@@ -1,6 +1,7 @@
 import sys
 from termcolor import colored
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
+from cli.config import read_config_file
 
 
 class Utils(object):
@@ -23,29 +24,32 @@ class Utils(object):
                 self.error("Invalid answer")
 
 
-    def success(self, string, interactive=False):
-        self.stdout.write(colored(string, 'green', attrs=['bold']))
+    def success(self, msg, interactive=False):
+        msg = colored(msg.strip(), 'green', attrs=['bold'])
+        self.stdout.write(msg + "\n")
         if not interactive:
             sys.exit(SUCCESS)
 
-    def warning(self, string, interactive=False):
-        self.stdout.write(colored(string, 'yellow', attrs=['bold']))
+    def warning(self, msg, interactive=False):
+        msg = colored(msg.strip(), 'yellow', attrs=['bold'])
+        self.stdout.write(msg + "\n")
         if not interactive:
             sys.exit(SUCCESS)
 
-    def error(self, string, code, interactive=False):
-        self.stdout.write(colored(string, 'red', attrs=['bold']))
+    def error(self, msg, code, interactive=False):
+        msg = colored(msg.strip(), 'red', attrs=['bold'])
+        self.stdout.write(msg + "\n")
         if not interactive:
             sys.exit(code)
 
-    def not_found(self, string):
-        self.error(string, NOT_FOUND)
+    def not_found(self, msg):
+        self.error(msg, NOT_FOUND)
 
-    def already_exists(self, string):
-        self.error(string, EXISTS)
+    def already_exists(self, msg):
+        self.error(msg, EXISTS)
 
-    def invalid(self, string, interactive=False):
-        self.error(string, INVALID, interactive)
+    def invalid(self, msg, interactive=False):
+        self.error(msg, INVALID, interactive)
 
 
     def error_no_match(self):
