@@ -8,5 +8,6 @@ class FakeCommand(Command):
         parser.add_argument('test', type=str, default='bile')
 
     def action(self, args):
-        print("+++ Fake +++")
-        print(args)
+        self.stdout.write("+++ Fake +++\n")
+        #print(args)
+        #Project(user_id=1, name='bitocul').save()

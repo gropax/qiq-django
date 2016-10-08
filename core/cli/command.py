@@ -1,3 +1,4 @@
+import sys
 from argparse import ArgumentParser
 
 
@@ -20,8 +21,9 @@ class Command(object):
         cls.subcommands[name] = subcmd
 
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, stdout=sys.stdout):
         self.parent = parent
+        self.stdout = stdout
         self.name = self.__class__.name
 
         # Initialize parser
@@ -38,7 +40,7 @@ class Command(object):
 
             self.subcommands = {}
             for name, klass in self.__class__.subcommands.items():
-                cmd = klass(self)
+                cmd = klass(parent=self, stdout=self.stdout)
                 self.subcommands[name] = cmd
 
 
@@ -49,9 +51,12 @@ class Command(object):
             cmd = cmd.parent
         return "_".join(names + ['subcmd'])
 
-    def execute(self, args=None):
+    def execute(self, args=None, test=None):
         if not args:
-            args = self.parser.parse_args()
+            if test:
+                args = self.parser.parse_args(test)
+            else:
+                args = self.parser.parse_args()
 
         if hasattr(self.__class__, 'subcommands'):
             name = getattr(args, self.subcmds_arg())
@@ -67,5 +72,7 @@ class Command(object):
     def add_arguments(self, parser):
         pass
     #
+    # The default behaviour if action is not specified is printing help.
+    #
     def action(self, args):
-        pass
+        self.parser.print_help()
