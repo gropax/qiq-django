@@ -1,5 +1,6 @@
-from django.core.management.base import BaseCommand, CommandParser, CommandError
-from argparse import FileType
+from core.cli.command import Command, command
+from notes.cli.utils import Utils
+from notes.cli.commands.note import NoteCommand
 import pytz
 import math
 from datetime import datetime, timedelta
@@ -7,14 +8,11 @@ from notes.models import Note
 from django.db.models import Avg
 
 
-class Command(BaseCommand):
+@command('status', NoteCommand)
+class StatusCommand(Command, Utils):
     help = 'Return computer friendly statistics related to note creation'
 
-    def add_arguments(self, parser):
-        #parser.add_arguments('-')
-        pass
-
-    def handle(self, *args, **options):
+    def action(self, args):
         current = (datetime.now(pytz.utc) - timedelta(days=3),
                    datetime.now(pytz.utc))
 
@@ -42,7 +40,7 @@ class Command(BaseCommand):
 
         original = Note.objects.filter(user_id=1, original=True)
         dval = original.aggregate(Avg('rank')).values()
-        rk_avg = list(dval)[0]
+        rk_avg = list(dval)[0] or 0
 
         return (rk1_no, rk_gt1_no, rk_avg)
 

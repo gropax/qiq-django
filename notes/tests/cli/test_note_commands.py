@@ -80,3 +80,8 @@ class GetCommand(TestCase):
 
     def test_error_no_match(self):
         self.assert_not_found('note', 'get', 'text', 123)
+
+
+class StatusCommand(TestCase):
+    def test_success(self):
+        self.assert_success('note', 'status')

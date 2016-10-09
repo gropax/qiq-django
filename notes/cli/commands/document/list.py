@@ -3,7 +3,7 @@ from notes.cli.utils import Utils
 from notes.cli.commands.document import DocumentCommand
 from notes.models import Document
 import termblocks as tb
-import cli.format as f
+import core.cli.format as f
 
 
 @command('list', DocumentCommand)

@@ -4,7 +4,7 @@ from lexical_units.cli.commands.unit.unit import UnitCommand
 from lexical_units.models import LexicalUnit
 import termblocks as tb
 import lexical_units.utils as lex
-import cli.format as f
+import core.cli.format as f
 
 
 @command('info', UnitCommand)

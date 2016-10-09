@@ -1,7 +1,7 @@
 import readline
 from django.core.exceptions import ObjectDoesNotExist
 from core.cli.utils import Utils as Base
-import cli.utils.projects as prj
+from projects.cli import utils2 as prj
 from projects.models import Project
 
 

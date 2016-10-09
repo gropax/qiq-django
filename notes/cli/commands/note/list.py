@@ -1,7 +1,7 @@
 from core.cli.command import Command, command
 from notes.cli.utils import Utils
 from notes.cli.commands.note import NoteCommand
-import cli.format as f
+import core.cli.format as f
 
 
 @command('list', NoteCommand)

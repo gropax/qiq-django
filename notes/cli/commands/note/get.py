@@ -1,7 +1,6 @@
 from core.cli.command import Command, command
 from notes.cli.utils import Utils
 from notes.cli.commands.note import NoteCommand
-import cli.format as f
 
 
 FIELDS = ['text']

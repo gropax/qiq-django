@@ -2,7 +2,7 @@ from core.cli.command import Command, command
 from languages.cli.utils import Utils
 from languages.cli.commands.language import LanguageCommand
 from languages.models import Language
-import cli.format as f
+import core.cli.format as f
 
 
 @command('list', LanguageCommand)

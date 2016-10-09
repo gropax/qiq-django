@@ -3,7 +3,7 @@ from lexical_units.cli.utils import Utils
 from lexical_units.cli.commands.unit.unit import UnitCommand
 from languages.models import Language
 from lexical_units.models import LexicalUnit
-import cli.format as f
+import core.cli.format as f
 
 
 @command('list', UnitCommand)

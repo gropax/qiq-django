@@ -1,7 +1,7 @@
 import sys
 from termcolor import colored
 from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND, NOT_IMPLEMENTED
-from cli.config import read_config_file
+from core.cli.config import read_config_file
 
 
 class Utils(object):

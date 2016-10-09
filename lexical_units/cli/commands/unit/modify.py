@@ -4,7 +4,7 @@ from lexical_units.cli.commands.unit.unit import UnitCommand
 from languages.models import Language
 from lexical_units.models import LexicalUnit
 from django.core.exceptions import ObjectDoesNotExist
-import cli.utils.projects as prj
+from projects.cli import utils2 as prj
 
 
 @command('modify', UnitCommand)

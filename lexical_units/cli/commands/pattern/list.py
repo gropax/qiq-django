@@ -3,7 +3,7 @@ from lexical_units.cli.utils import Utils
 from lexical_units.cli.commands.pattern.pattern import PatternCommand
 from lexical_units.models import LexicalPattern
 import lexical_units.utils as lex
-import cli.format as f
+import core.cli.format as f
 
 
 @command('list', PatternCommand)

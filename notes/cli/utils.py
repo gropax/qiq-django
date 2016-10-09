@@ -2,7 +2,7 @@ import re
 import tempfile
 import subprocess
 import shlex
-import cli.utils.projects as prj
+from projects.cli import utils2 as prj
 from projects.cli.utils import Utils as Base
 from notes.models import Note, Document
 

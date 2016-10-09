@@ -2,7 +2,7 @@ from core.cli.command import Command, command
 from projects.cli.utils import Utils
 from projects.cli.commands.project import ProjectCommand
 from projects.models import Project
-import cli.format as f
+import core.cli.format as f
 
 
 @command('list', ProjectCommand)

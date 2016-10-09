@@ -3,7 +3,7 @@ from core.cli.command import Command, command
 from projects.cli.utils import Utils
 from projects.cli.commands.project import ProjectCommand
 from projects.models import Project
-import cli.utils.projects as prj
+from projects.cli import utils2 as prj
 
 
 @command('modify', ProjectCommand)

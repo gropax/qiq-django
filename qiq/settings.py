@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'notes.apps.NotesConfig',
     'languages.apps.LanguagesConfig',
     'lexical_units.apps.LexicalUnitsConfig',
-    'cli.apps.CLIConfig',
 ]
 
 MIDDLEWARE = [

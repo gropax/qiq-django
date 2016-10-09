@@ -2,7 +2,7 @@ from core.cli.command import Command, command
 from notes.cli.utils import Utils
 from notes.cli.commands.note import NoteCommand
 import termblocks as tb
-import cli.format as f
+import core.cli.format as f
 
 
 @command('info', NoteCommand)
