@@ -5,6 +5,8 @@ from notes.cli.commands.document import DocumentCommand
 
 @command('delete', DocumentCommand)
 class DeleteCommand(Command, Utils):
+    aliases = ('del',)
+
     def add_arguments(self, parser):
         parser.add_argument('name_or_id', type=str, help='the name or the id of the document')
 

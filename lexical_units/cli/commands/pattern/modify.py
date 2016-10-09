@@ -6,6 +6,8 @@ from lexical_units.models import LexicalPattern
 
 @command('modify', PatternCommand)
 class ModifyCommand(Command, Utils):
+    aliases = ('mod',)
+
     def add_arguments(self, parser):
         parser.add_argument('id', type=int, help='the id of the lexical unit')
         parser.add_argument('-d', '--description', type=str,

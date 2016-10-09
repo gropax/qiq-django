@@ -5,6 +5,8 @@ from languages.cli.commands.language import LanguageCommand
 
 @command('modify', LanguageCommand)
 class ModifyCommand(Command, Utils):
+    aliases = ('mod',)
+
     def add_arguments(self, parser):
         pass
 

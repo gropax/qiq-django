@@ -5,6 +5,8 @@ from notes.cli.commands.document import DocumentCommand
 
 @command('modify', DocumentCommand)
 class ModifyCommand(Command, Utils):
+    aliases = ('mod',)
+
     def add_arguments(self, parser):
         parser.add_argument('name_or_id', type=str, help='the name or the id of the document')
         parser.add_argument('-d', '--description', type=str,

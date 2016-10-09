@@ -5,6 +5,8 @@ from languages.cli.commands.language import LanguageCommand
 
 @command('delete', LanguageCommand)
 class DeleteCommand(Command, Utils):
+    aliases = ('del',)
+
     def add_arguments(self, parser):
         pass
 

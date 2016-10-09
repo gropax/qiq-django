@@ -5,6 +5,8 @@ from notes.cli.commands.note import NoteCommand
 
 @command('delete', NoteCommand)
 class DeleteCommand(Command, Utils):
+    aliases = ('del',)
+
     def add_arguments(self, parser):
         parser.add_argument('filters', nargs='+', type=str,
                             help='filters used to select the notes')

@@ -6,6 +6,8 @@ from lexical_units.models import LexicalUnit
 
 @command('delete', UnitCommand)
 class DeleteCommand(Command, Utils):
+    aliases = ('del',)
+
     def add_arguments(self, parser):
         parser.add_argument('id', type=int, help='the id of the lexical unit')
 

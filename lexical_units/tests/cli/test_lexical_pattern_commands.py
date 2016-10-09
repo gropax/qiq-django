@@ -26,6 +26,10 @@ class NewCommand(TestCase):
         self.assert_success('lexical', 'pattern', 'new', 'fra', 'X *donner* Y à Z_hum', '--force-lemma')
         self.assert_exists('lexical', 'pattern', 'new', 'fra', 'X *donner* Y à Z_hum', '--force-lemma')
 
+    def test_aliases(self):
+        lang = Language(code='fra', name='French'); lang.save()
+        self.assert_success('lex', 'pattern', 'new', 'fra', 'X *donner* Y à Z_hum', '--force-lemma')
+
 
 class ListCommand(TestCase):
     def test_success(self):

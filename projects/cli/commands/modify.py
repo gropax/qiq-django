@@ -8,6 +8,8 @@ from projects.cli import utils2 as prj
 
 @command('modify', ProjectCommand)
 class ModifyCommand(Command, Utils):
+    aliases = ('mod',)
+
     def add_arguments(self, parser):
         parser.add_argument('name_or_id', type=str,
                             help='the name or ID of the project (fully qualified)')

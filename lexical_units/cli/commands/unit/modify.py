@@ -9,6 +9,8 @@ from projects.cli import utils2 as prj
 
 @command('modify', UnitCommand)
 class ModifyCommand(Command, Utils):
+    aliases = ('mod',)
+
     def add_arguments(self, parser):
         parser.add_argument('id', type=int, help='the id of the lexical unit')
         parser.add_argument('-l', '--lemma', type=str,

@@ -14,6 +14,9 @@ def command(name, parent=None):
 
 
 class Command(object):
+
+    aliases = []
+
     @classmethod
     def register(cls, name, subcmd):
         if not hasattr(cls, 'subcommands'):
@@ -28,7 +31,8 @@ class Command(object):
 
         # Initialize parser
         if self.parent:
-            self.parser = self.parent.subparsers.add_parser(self.name)
+            self.parser = self.parent.subparsers.add_parser(self.name,
+                                                            aliases=self.__class__.aliases)
         else:
             self.parser = ArgumentParser(description="@TODO")
 
@@ -47,7 +51,7 @@ class Command(object):
     def subcmds_arg(self):
         cmd, names = self, []
         while cmd.parent:
-            names.insert(0, self.name)
+            names.insert(0, cmd.name)
             cmd = cmd.parent
         return "_".join(names + ['subcmd'])
 
@@ -61,9 +65,18 @@ class Command(object):
         if hasattr(self.__class__, 'subcommands'):
             name = getattr(args, self.subcmds_arg())
             if name:
-                return self.subcommands[name].execute(args)
+                #print(args)
+                return self.find_subcommand(name).execute(args)
 
         return self.action(args)
+
+    def find_subcommand(self, name):
+        if name in self.subcommands:
+            return self.subcommands[name]
+        else:
+            for cmd in self.subcommands.values():
+                if name in cmd.aliases:
+                    return cmd
 
 
     # @abstract
