@@ -124,5 +124,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
-
-QIQ_CLI = True  # @fixme Select value based on environment variable instead
