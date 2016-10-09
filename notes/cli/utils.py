@@ -4,7 +4,7 @@ import subprocess
 import shlex
 import cli.utils.projects as prj
 from projects.cli.utils import Utils as Base
-from notes.models import Note
+from notes.models import Note, Document
 
 # Document's name begin with a letter, may contain numbers and dots, cannot end
 # with a dot. All letters are lower case.

@@ -37,7 +37,7 @@ class Document(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def age(self):
-        return notes.helpers.age(self.created)
+        return core.utils.age(self.created)
 
     class Meta:
         unique_together = ('user', 'name')
