@@ -1,6 +1,6 @@
 import sys
 from termcolor import colored
-from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
+from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND, NOT_IMPLEMENTED
 from cli.config import read_config_file
 
 
@@ -50,6 +50,11 @@ class Utils(object):
 
     def invalid(self, msg, interactive=False):
         self.error(msg, INVALID, interactive)
+
+    def not_implemented(self):
+        msg = colored('Not implemented', 'magenta', attrs=['bold'])
+        self.stdout.write(msg + "\n")
+        sys.exit(NOT_IMPLEMENTED)
 
 
     def error_no_match(self):

@@ -2,7 +2,7 @@ import django
 from django.core.management import call_command
 from io import StringIO
 from core.cli.commands.qiq import QiqCommand
-from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND
+from qiq.common import SUCCESS, INVALID, EXISTS, NOT_FOUND, NOT_IMPLEMENTED
 from io import StringIO
 import tempfile
 
@@ -35,6 +35,9 @@ class TestCase(django.test.TestCase):
 
     def assert_not_found(self, *cmd):
         self.assertEqual(NOT_FOUND, self.qiq(*cmd))
+
+    def assert_not_implemented(self, *cmd):
+        self.assertEqual(NOT_IMPLEMENTED, self.qiq(*cmd))
 
     def dummy_file(self, text='abc'):
         _, path = tempfile.mkstemp()
