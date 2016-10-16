@@ -112,3 +112,15 @@ def format_project_note_no(n):
 
 def format_language(lang):
     return "%s (%s)" % (lang.name, lang.code)
+
+def format_completion(comp):
+    color = None
+    if comp == 1:
+        color = 'cyan'
+    elif comp >= 0.75:
+        color = 'green'
+    elif comp >= 0.5:
+        color = 'yellow'
+    else:
+        color = 'red'
+    return ["%i%%" % (comp * 100), {'color': color, 'style': ['bold']}]

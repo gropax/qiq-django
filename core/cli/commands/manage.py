@@ -1,84 +1,63 @@
 from core.cli.command import Command, command
 from core.cli.commands.qiq import QiqCommand
-from django.db.models import Count
-from projects.models import Project
-from collections import defaultdict
+from core.cli.utils import Utils
+from core.cli.management import ManagementTasks
 from termblocks import TextBlock, TableBlock, MarginBlock, VerticalLayout
-from core.cli.format import headers_data, format_table, model_row_data
+from core.cli.format import format_table, list_table, format_cell, headers_data, format_completion
 
 
 @command('manage', QiqCommand)
-class ManageCommand(Command):
+class ManageCommand(Command, Utils):
     help = 'Help improve database quality'
 
     def add_arguments(self, parser):
-        parser.add_argument('-l', '--list', action='store_true', default=False,
-                            help='list the pending management tasks')
+        parser.add_argument('-p', '--perform', metavar='TASK',
+                            help='execute management tasks')
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument('--by-model', action='store_true')
+        group.add_argument('--by-task', action='store_false')
 
     def action(self, args):
-        tasks = self.compute_management_tasks()
+        self.tasks = ManagementTasks()
+        self.task_types = self.tasks.types()
 
-        if args.list:
-            self.stdout.write(self.format_tasks(tasks))
+        if args.perform:
+            names = args.perform.split(".")
+            tasks = self.tasks.get(names)
+
+            if isinstance(tasks, list):
+                iterator = tasks.__iter__()
+            else:
+                if args.by_task:
+                    iterator = tasks.by_task()
+                else:
+                    iterator = tasks.by_model()
+
+            for task in iterator:
+                task.perform()
         else:
-            self.perform_tasks(tasks)
+            self.stdout.write(self.format_tasks(self.task_types))
 
-    def compute_management_tasks(self):
-        tasks = defaultdict(list)
-
-        projs = Project.objects.filter(user_id=1).all()
-        sort = sorted(projs, key=lambda p: p.full_name())
-
-        for proj in sort:
-            if not proj.description:
-                tasks['descriptions'].append(ProjectAddDescription(proj))
-            if proj.notes.count() > 5:
-                tasks['merge_notes'].append(ProjectMergeNotes(proj))
-        return tasks
+    def check_management_task_exists(self, name):
+        names = set(name for name, *_ in self.task_types)
+        if not name in names:
+            self.not_found("Task does not exist `%s`" % name)
 
     def format_tasks(self, tasks):
-        headers = ['Task', 'Nb']
-        data = [
-            ['Add project description',  len(tasks['descriptions'])],
-            ['Merge notes in project',  len(tasks['merge_notes'])],
-        ]
+        headers = ['Name', 'Nb', 'Comp', 'Description']
+        data = []
+        for name, task_type, nb, comp in tasks:
+            data.append([
+                name,
+                nb,
+                format_completion(comp),
+                task_type.description,
+            ])
+
         rows = [headers_data(headers)]
-        for label, value in data:
-            rows.append(model_row_data(label, value))
+        for values in data:
+            cells = [format_cell(v) for v in values]
+            options = {}
+            rows.append({'cells': cells, 'options': options})
 
         return format_table(rows).format()
-
-    def perform_tasks(self, tasks):
-        if tasks['descriptions']:
-            self.print_task_title("Adding project descriptions")
-            for task in tasks['descriptions']:
-                task.perform()
-
-    def print_task_title(self, title):
-        s = "\n" + title + "\n" + "="*len(title) + "\n"
-        self.stdout.write(s)
-
-
-class ProjectAddDescription(object):
-    def __init__(self, proj):
-        self.project = proj
-
-    def perform(self):
-        # @fixme interactions
-        desc = input("Enter a description for `%s`  (pass) " % self.project.full_name())
-        if desc:
-            self.project.description = desc
-            self.project.save()
-
-
-class ProjectMergeNotes(object):
-    def __init__(self, proj):
-        self.project = proj
-
-    def perform(self):
-        pass
-        # @fixme interactions
-        #yes = input("Do you want to merge notes in `%s` (no) " % self.project.full_name())
-        #if yes:
-            #self.project.description = desc
-            #self.project.save()
