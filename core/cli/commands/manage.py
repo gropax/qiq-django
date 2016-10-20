@@ -25,6 +25,11 @@ class ManageCommand(Command, Utils):
             names = args.perform.split(".")
             tasks = self.tasks.get(names)
 
+            if tasks == None:
+                self.not_found("Task does not exist `%s`" % args.perform)
+            elif not tasks:
+                self.warning_nothing_to_do()
+
             if isinstance(tasks, list):
                 iterator = tasks.__iter__()
             else:
@@ -34,7 +39,10 @@ class ManageCommand(Command, Utils):
                     iterator = tasks.by_model()
 
             for task in iterator:
-                task.perform()
+                try:
+                    task.perform()
+                except NotImplementedError:
+                    self.not_implemented()
         else:
             self.stdout.write(self.format_tasks(self.task_types))
 

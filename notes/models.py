@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from projects.models import Project
 import notes
 import core.utils
-#from notes.helpers import age
-#import notes.helpers
 
 
 class Note(models.Model):
@@ -35,6 +33,13 @@ class Document(models.Model):
     name = models.CharField(max_length=32, blank=False)
     description = models.CharField(max_length=80, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    def full_name(self):
+        prj = self.note.project
+        if prj:
+            return prj.full_name() + '/' + self.name
+        else:
+            return self.name
 
     def age(self):
         return core.utils.age(self.created)

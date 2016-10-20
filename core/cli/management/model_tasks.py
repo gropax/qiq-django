@@ -21,15 +21,15 @@ class ModelTasks(object):
 
     def compute_tasks(self):
         cls = self.__class__
-        for model in cls.models():
+
+        self.tasks_by_class = {ft: [] for _, ft in cls.field_tasks.items()}
+
+        for model in self.models():
             self.model_count += 1
 
-            if not model in self.tasks_by_model:
-                self.tasks_by_model[model] = []
-
             for name, ft in cls.field_tasks.items():
-                if not ft in self.tasks_by_class:
-                    self.tasks_by_class[ft] = []
+                if not model in self.tasks_by_model:
+                    self.tasks_by_model[model] = []
 
                 task = ft.check(model)
                 if task:
@@ -47,11 +47,17 @@ class ModelTasks(object):
             return self
 
     def types(self):
+        cls = self.__class__
+        task_names = sorted(cls.field_tasks.keys())
+
         types = []
-        for name, task_type in self.__class__.field_tasks.items():
+        for name in task_names:
+            task_type = cls.field_tasks[name]
+
             nb = len(self.tasks_by_class[task_type])
-            comp = (self.model_count - nb) / self.model_count
+            comp = (self.model_count - nb) / self.model_count if self.model_count else 0
             types.append((self.name + '.' + name, task_type, nb, comp))
+
         return types
 
     def by_task(self):

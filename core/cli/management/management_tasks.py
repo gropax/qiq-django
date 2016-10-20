@@ -7,7 +7,7 @@ class ManagementTasks(object):
     def get(self, names):
         for module_tasks in self.tasks:
             tasks = module_tasks.get(names)
-            if tasks:
+            if not tasks == None:
                 return tasks
         return None
 
