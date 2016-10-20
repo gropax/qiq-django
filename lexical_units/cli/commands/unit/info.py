@@ -33,6 +33,7 @@ class InfoCommand(Command, Utils):
             ['Username', unit.user.username],
             ['Language', f.format_language(unit.language)],
             ['Created', f.format_creation_date(unit)],
+            ['Category', unit.grammatical_category],
             ['Lemma', unit.lemma],
             ['Patterns', unit.patterns.count()],
         ])
@@ -45,9 +46,12 @@ class InfoCommand(Command, Utils):
         return vlayout.format()
 
     def format_colored(self, patterns):
-        pats = [lex.parse_pattern(p.description) for p in patterns]
-        colored = pats[0].format_termblock(self.cfg)
-        for p in pats[1:]:
-            colored.append({'text': '\n'})
-            colored += p.format_termblock(self.cfg)
-        return colored
+        if list(patterns):
+            pats = [lex.parse_pattern(p.description) for p in patterns]
+            colored = pats[0].format_termblock(self.cfg)
+            for p in pats[1:]:
+                colored.append({'text': '\n'})
+                colored += p.format_termblock(self.cfg)
+            return colored
+        else:
+            return ''

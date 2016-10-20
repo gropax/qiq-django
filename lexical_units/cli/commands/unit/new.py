@@ -10,6 +10,8 @@ class NewCommand(Command, Utils):
     def add_arguments(self, parser):
         parser.add_argument('language', type=str, help='the iso-3 of the language')
         parser.add_argument('lemma', type=str, help='the lemma of the lexical unit')
+        parser.add_argument('-c', '--category', type=str, choices=LexicalUnit.CATEGORIES,
+                            metavar='CAT', help='the grammatical category of the lexical unit')
 
     def action(self, args):
         lang = args.language
@@ -21,6 +23,10 @@ class NewCommand(Command, Utils):
 
         language = Language.objects.get(code=lang)
         unit = LexicalUnit(user_id=1, language_id=lang, lemma=lemma)
+
+        if args.category:
+            unit.grammatical_category = args.category
+
         unit.save()
 
         self.success_lexical_unit_created(unit)
