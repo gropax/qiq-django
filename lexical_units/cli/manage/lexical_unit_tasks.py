@@ -10,9 +10,4 @@ class LexicalUnitTasks(ModelTasks):
         super(LexicalUnitTasks, self).__init__()
 
     def models(self):
-        return LexicalUnit.objects.filter(user_id=1).all()
-        #return LexicalUnit.objects.filter(user_id=1, language=self.language).all()
-
-    #def types(self):
-        #print("tasks_by_class: %s" % self.tasks_by_class)
-        #super(LexicalUnitTasks, self).types()
+        return LexicalUnit.objects.filter(user_id=1, language=self.language).all()

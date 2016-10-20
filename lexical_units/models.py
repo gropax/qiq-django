@@ -26,6 +26,8 @@ class LexicalUnit(models.Model):
 
     category = models.SmallIntegerField(choices=GRAMMATICAL_CATEGORIES, default=NA)
     lemma = models.CharField(max_length=80)
+    definition = models.CharField(max_length=200, blank=True, null=True)
+
     created = models.DateTimeField(auto_now_add=True)
 
     def age(self):

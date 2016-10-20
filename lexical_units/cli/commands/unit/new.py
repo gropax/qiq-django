@@ -12,6 +12,8 @@ class NewCommand(Command, Utils):
         parser.add_argument('lemma', type=str, help='the lemma of the lexical unit')
         parser.add_argument('-c', '--category', type=str, choices=LexicalUnit.CATEGORIES,
                             metavar='CAT', help='the grammatical category of the lexical unit')
+        parser.add_argument('-d', '--definition', type=str,
+                            metavar='DEF', help='definitions for the lexical unit')
 
     def action(self, args):
         lang = args.language
@@ -22,7 +24,7 @@ class NewCommand(Command, Utils):
         self.check_lemma_does_not_exist(lang, lemma)  # @fixme Multiple entries for one lemma ??
 
         language = Language.objects.get(code=lang)
-        unit = LexicalUnit(user_id=1, language_id=lang, lemma=lemma)
+        unit = LexicalUnit(user_id=1, language_id=lang, lemma=lemma, definition=args.definition)
 
         if args.category:
             unit.grammatical_category = args.category

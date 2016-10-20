@@ -25,7 +25,7 @@ class ListCommand(Command, Utils):
         self.stdout.write(output)
 
     def format(self, units):
-        headers = ['ID', 'Lang', 'Pat', 'Cat', 'Lemma']
+        headers = ['ID', 'Lang', 'Pat', 'Cat', 'Lemma', 'Definition']
         table = f.list_table(headers, units, self.list_row_data)
         return table.format()
 
@@ -36,4 +36,5 @@ class ListCommand(Command, Utils):
             unit.patterns.count(),
             unit.grammatical_category,
             unit.lemma,
+            unit.definition or '-',
         ]

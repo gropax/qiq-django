@@ -17,6 +17,8 @@ class ModifyCommand(Command, Utils):
                             help='the new lemma of the lexical unit')
         parser.add_argument('-c', '--category', type=str, choices=LexicalUnit.CATEGORIES,
                             metavar='CAT', help='the grammatical category of the lexical unit')
+        parser.add_argument('-d', '--definition', type=str,
+                            metavar='DEF', help='definitions for the lexical unit')
 
     def action(self, args):
         unit_id = args.id
@@ -36,6 +38,11 @@ class ModifyCommand(Command, Utils):
         new_cat = args.category
         if new_cat and new_cat != unit.grammatical_category:
             unit.grammatical_category = new_cat
+            modified = True
+
+        new_def = args.definition
+        if new_def and new_def != unit.definition:
+            unit.definition = new_def
             modified = True
 
         if modified:

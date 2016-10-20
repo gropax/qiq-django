@@ -35,6 +35,7 @@ class InfoCommand(Command, Utils):
             ['Created', f.format_creation_date(unit)],
             ['Category', unit.grammatical_category],
             ['Lemma', unit.lemma],
+            ['Definition', unit.definition or '-'],
             ['Patterns', unit.patterns.count()],
         ])
 
