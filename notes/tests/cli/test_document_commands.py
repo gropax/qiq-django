@@ -83,3 +83,17 @@ class DeleteCommand(TestCase):
     def test_error_document_not_found(self):
         self.assert_not_found('document', 'delete', 'abc')
         self.assert_not_found('document', 'delete', 123)
+
+
+class GetCommand(TestCase):
+    def test_success(self):
+        User(username='auie').save()
+        note = Note(user_id=1, text='abc', original=True); note.save()
+        doc = Document(user_id=1, note=note, name='abc'); doc.save()
+
+        self.assert_success('doc', 'get', 'text', doc.id)
+        self.assert_success('doc', 'get', 'text', doc.name)
+
+    def test_error_no_match(self):
+        self.assert_not_found('doc', 'get', 'text', 123)
+        self.assert_not_found('doc', 'get', 'text', 'fakename')

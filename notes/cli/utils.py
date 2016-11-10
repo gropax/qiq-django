@@ -16,6 +16,8 @@ IDS_re = re.compile(r'^\d+(?:,\d+)*$')
 PROJ_re = re.compile(r'^proj(?:ect)?:([a-z]+(?:\/[a-z]+)*)$')
 VTAG_re = re.compile(r'^(\+|-)([A-Z]+)$')
 
+NOTE_ATTRIBUTES = ['text']
+
 
 class Utils(Base):
 
@@ -144,6 +146,9 @@ class Utils(Base):
             return
         self.error_document_already_exists(name)
 
+    def get_note_attribute(self, note, attr):
+        if attr == 'text':
+            return note.text
 
     def filter_notes(self, filters):
         q = self.filter_query(filters)
