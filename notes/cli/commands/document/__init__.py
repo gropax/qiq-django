@@ -5,3 +5,4 @@ from .modify import ModifyCommand
 from .delete import DeleteCommand
 from .info import InfoCommand
 from .get import GetCommand
+from .edit import EditCommand

@@ -5,6 +5,7 @@ import shlex
 from projects.cli import utils2 as prj
 from projects.cli.utils import Utils as Base
 from notes.models import Note, Document
+from notes.helpers import merge_notes
 
 # Document's name begin with a letter, may contain numbers and dots, cannot end
 # with a dot. All letters are lower case.
@@ -23,7 +24,7 @@ class Utils(Base):
 
     # Notes
     #
-    def edit_note_in_editor(self, args, text=None):
+    def edit_note_in_editor(self, text=None, editor=None):
         _, f = tempfile.mkstemp()
 
         # Write notes in tmp
@@ -31,9 +32,9 @@ class Utils(Base):
             with open(f, 'w') as tmpf:
                 tmpf.write(text)
 
-        if args.editor:
+        if editor:
             # @fixme Use custom editor command
-            cmd_str = args.editor.replace('%', f)
+            cmd_str = editor.replace('%', f)
             subprocess.call(shlex.split(cmd_str))
         else:
             subprocess.call(['vim', f, '-c', 'startinsert'])  # '-u', 'NONE',
@@ -47,6 +48,9 @@ class Utils(Base):
         if note.project:
             s += " in %s" % note.project.full_name()
         self.success(s)
+
+    def success_document_saved(self, doc):
+        self.success("Document `%s` saved" % doc.name)
 
     def success_document_modified(self, doc, old_name, desc_mod):
         if old_name:
@@ -205,4 +209,17 @@ class Utils(Base):
         doc = Document(user_id=1, name=name, note=note, description=desc)
         doc.save()
         return doc
+
+    def merge_notes(self, notes, proj, editor=None, quick=False):
+        text = "\n\n".join(note.text.strip() for note in notes)
+
+        if not quick:
+            f = self.edit_note_in_editor(text, editor=editor)
+            with open(f, 'r') as file:
+                text = file.read()
+
+        if text:
+            return merge_notes(proj, text, notes)
+        else:
+            return None
 

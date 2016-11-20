@@ -1,7 +1,6 @@
 from core.cli.command import Command, command
 from notes.cli.utils import Utils
 from notes.cli.commands.note import NoteCommand
-from notes.helpers import merge_notes
 
 
 @command('merge', NoteCommand)
@@ -31,15 +30,8 @@ class MergeCommand(Command, Utils):
 
         proj = self.get_or_prompt_project(args, default=self.default_project(notes))
 
-        text = "\n\n".join(note.text.strip() for note in notes)
-
-        if not args.quick_merge:
-            f = self.edit_note_in_editor(args, text=text)
-            with open(f, 'r') as file:
-                text = file.read()
-
-        if text:
-            note = merge_notes(proj, text, notes)
+        note = self.merge_notes(notes, proj, editor=args.editor, quick=args.quick_merge)
+        if note:
             self.success_note_created(note)
         else:
             self.warning_nothing_to_do()
