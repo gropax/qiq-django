@@ -28,7 +28,12 @@ class MergeCommand(Command, Utils):
         if not notes:
             self.error_no_match()
 
-        proj = self.get_or_prompt_project(args, default=self.default_project(notes))
+        if args.no_project:
+            proj = None
+        else:
+            proj = self.get_or_prompt_project(project=args.project,
+                                              create_project=args.create_project,
+                                              default=self.default_project(notes))
 
         note = self.merge_notes(notes, proj, editor=args.editor, quick=args.quick_merge)
         if note:

@@ -162,7 +162,12 @@ class Utils(Base):
     # @todo Move to _functions.py
     #
     def filter_query(self, filters):
-        ids, proj_name, vtags = set(), None, {}
+        ids, proj_name_or_id = set(), None
+
+        # Default virtual tags
+        vtags = {
+            'ORIGINAL': True,
+        }
 
         for f in filters:
             if IDS_re.match(f):
@@ -188,10 +193,6 @@ class Utils(Base):
 
         if proj_name_or_id:
             q['project'] = self.find_project_by_name_or_id_or_error(proj_name_or_id)
-            #try:
-                #q['project'] = prj.get_by_fullname(proj_name)
-            #except ObjectDoesNotExist:
-                #self.error_project_not_found(proj_name)
 
         if 'ORIGINAL' in vtags:
             q['original'] = vtags['ORIGINAL']

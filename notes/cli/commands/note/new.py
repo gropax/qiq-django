@@ -31,13 +31,16 @@ class NewCommand(Command, Utils):
             last_note = Note.objects.filter(user_id=1, project__isnull=False) \
                                        .order_by('-created').first()
             proj = last_note.project
+        elif args.no_project:
+            proj = None
         else:
-            proj = self.get_or_prompt_project(args)
+            proj = self.get_or_prompt_project(project=args.project,
+                                              create_project=args.create_project)
 
         if args.infile:
             f = args.infile.name
         else:
-            f = self.edit_note_in_editor(args)
+            f = self.edit_note_in_editor(text=None, editor=args.editor)
 
         with open(f, 'r') as file:
             text = file.read()

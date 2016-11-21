@@ -25,9 +25,14 @@ class SplitCommand(Command, Utils):
 
     def execute(self, args):
         note = self.find_note_by_id_or_error(args.id)
-        proj = self.get_or_prompt_project(args, default=note.project)
+        if args.no_project:
+            proj = None
+        else:
+            proj = self.get_or_prompt_project(project=args.project,
+                                              create_project=args.create_project,
+                                              default=note.project)
 
-        f = self.edit_note_in_editor(args, text=note.text)
+        f = self.edit_note_in_editor(text=note.text, editor=args.editor)
 
         with open(f, 'r') as file:
             keep_text = file.read()
