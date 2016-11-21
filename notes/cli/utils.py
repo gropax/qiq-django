@@ -6,6 +6,7 @@ from projects.cli import utils2 as prj
 from projects.cli.utils import Utils as Base
 from notes.models import Note, Document
 from notes.helpers import merge_notes
+from django.core.exceptions import ObjectDoesNotExist
 
 # Document's name begin with a letter, may contain numbers and dots, cannot end
 # with a dot. All letters are lower case.
@@ -14,7 +15,7 @@ DOCNAME_re = re.compile(r'^[a-z][a-z0-9]*(?:\.[a-z0-9]+)*$')
 VTAGS = ['ORIGINAL', 'DOCUMENT']
 
 IDS_re = re.compile(r'^\d+(?:,\d+)*$')
-PROJ_re = re.compile(r'^proj(?:ect)?:([a-z]+(?:\/[a-z]+)*)$')
+PROJ_re = re.compile(r'^proj(?:ect)?:((?:[0-9]+)|(?:[a-z][a-z0-9]+(?:\/[a-z][a-z0-9]+))*)$')
 VTAG_re = re.compile(r'^(\+|-)([A-Z]+)$')
 
 NOTE_ATTRIBUTES = ['text']
@@ -170,7 +171,7 @@ class Utils(Base):
 
             m = PROJ_re.match(f)
             if m:
-                proj_name = m.group(1)
+                proj_name_or_id = m.group(1)
                 continue
 
             m = VTAG_re.match(f)
@@ -185,14 +186,12 @@ class Utils(Base):
         q = {}
         if ids: q['id__in'] = list(ids)
 
-        if proj_name:
-            #proj = prj.get_project(proj_name)
-            proj = prj.get_by_fullname(proj_name)
-            if proj:
-                q['project'] = proj
-            else:
-                self.cmd.stderr.write(self.cmd.style.ERROR("Unknown project `%s`" % proj_name))
-                exit(1)
+        if proj_name_or_id:
+            q['project'] = self.find_project_by_name_or_id_or_error(proj_name_or_id)
+            #try:
+                #q['project'] = prj.get_by_fullname(proj_name)
+            #except ObjectDoesNotExist:
+                #self.error_project_not_found(proj_name)
 
         if 'ORIGINAL' in vtags:
             q['original'] = vtags['ORIGINAL']
