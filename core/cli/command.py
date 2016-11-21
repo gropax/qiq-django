@@ -1,5 +1,6 @@
 import sys
 from argparse import ArgumentParser
+from .utils import Utils
 
 
 # @decorator to register a sub command
@@ -13,7 +14,7 @@ def command(name, parent=None):
     return decorator
 
 
-class Command(object):
+class Command(Utils):
 
     aliases = []
 
@@ -65,10 +66,12 @@ class Command(object):
         if hasattr(self.__class__, 'subcommands'):
             name = getattr(args, self.subcmds_arg())
             if name:
-                #print(args)
                 return self.find_subcommand(name).execute(args)
-
-        return self.action(args)
+        try:
+            return self.action(args)
+        except KeyboardInterrupt:
+            print("\n")  # @fixme
+            self.warning_operation_aborted()
 
     def find_subcommand(self, name):
         if name in self.subcommands:

@@ -20,7 +20,7 @@ django.setup()
 
 from core.cli.commands.qiq import QiqCommand
 
-QiqCommand().execute()
 
+QiqCommand().execute()
 
 # vim: set filetype=python:
