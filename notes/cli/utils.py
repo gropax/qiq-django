@@ -25,7 +25,7 @@ class Utils(Base):
 
     # Notes
     #
-    def edit_note_in_editor(self, text=None, editor=None):
+    def edit_text_in_editor(self, text=None, editor=None):
         _, f = tempfile.mkstemp()
 
         # Write notes in tmp
@@ -40,7 +40,10 @@ class Utils(Base):
         else:
             subprocess.call(['vim', f, '-c', 'startinsert'])  # '-u', 'NONE',
 
-        return f
+        with open(f, 'r') as file:
+            text = file.read()
+
+        return text
 
     # Notes
     #
@@ -214,12 +217,9 @@ class Utils(Base):
         text = "\n\n".join(note.text.strip() for note in notes)
 
         if not quick:
-            f = self.edit_note_in_editor(text, editor=editor)
-            with open(f, 'r') as file:
-                text = file.read()
+            text = self.edit_text_in_editor(text, editor=editor)
 
         if text:
             return merge_notes(proj, text, notes)
         else:
             return None
-
