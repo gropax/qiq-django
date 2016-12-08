@@ -19,7 +19,7 @@ DOCNAME_re = re.compile(r'^[a-z][a-z0-9]*(?:\.[a-z0-9]+)*$')
 VTAGS = ['ORIGINAL', 'DOCUMENT']
 
 IDS_re = re.compile(r'^\d+(?:,\d+)*$')
-PROJ_re = re.compile(r'^proj(?:ect)?:((?:[0-9]+)|(?:[a-z][a-z0-9]+(?:\/[a-z][a-z0-9]+))*)$')
+PROJ_re = re.compile(r'^proj(?:ect)?:((?:[0-9]+)|(?:[a-z][a-z0-9]+(?:\/[a-z][a-z0-9]+)*))$')
 VTAG_re = re.compile(r'^(\+|-)([A-Z]+)$')
 
 NOTE_ATTRIBUTES = ['text']
@@ -166,6 +166,9 @@ class Utils(Base):
         q = self.filter_query(filters)
         return Note.objects.filter(**q)
 
+    def error_invalid_note_filter(self, filter):
+        self.invalid("Invalid note filter `%s`" % filter)
+
     # @todo Move to _functions.py
     #
     def filter_query(self, filters):
@@ -194,6 +197,8 @@ class Utils(Base):
                 else:
                     self.cmd.stderr.write(self.cmd.style.ERROR("Unknown virtual tag `%s`" % vtag))
                     exit(1)
+
+            self.error_invalid_note_filter(f)
 
         q = {}
         if ids: q['id__in'] = list(ids)
