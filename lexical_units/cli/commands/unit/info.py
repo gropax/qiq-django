@@ -32,7 +32,7 @@ class InfoCommand(Command, Utils):
             ['ID', unit.id],
             ['Username', unit.user.username],
             ['Language', f.format_language(unit.language)],
-            ['Created', f.format_creation_date(unit)],
+            ['Created', f.format_date(unit)],
             ['Category', unit.grammatical_category],
             ['Lemma', unit.lemma],
             ['Definition', unit.definition or '-'],

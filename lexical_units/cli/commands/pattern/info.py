@@ -33,7 +33,7 @@ class InfoCommand(Command, Utils):
             ['Username', pat.lexical_unit.user.username],
             ['Language', f.format_language(pat.lexical_unit.language)],
             ['Lemma', pat.lexical_unit.lemma],
-            ['Created', f.format_creation_date(pat)],
+            ['Created', f.format_date(pat)],
             ['Pattern', lex.parse_pattern(pat.description).format_termblock(self.cfg)],
         ])
         return table.format()

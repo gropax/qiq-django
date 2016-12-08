@@ -27,7 +27,7 @@ class ListCommand(Command, Utils):
     def list_row_data(self, note):
         return [
             note.id,
-            note.age(),
+            f.format_age(note.created),
             f.format_project_name(note.project),
             f.format_document_list(note),
             f.format_original(note),

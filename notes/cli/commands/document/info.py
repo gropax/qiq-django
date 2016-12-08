@@ -14,6 +14,8 @@ class InfoCommand(Command, Utils):
         name_or_id = args.name_or_id
         doc = self.find_document_by_name_or_id_or_error(name_or_id)
 
+        self.synchronize_document(doc)
+
         output = self.format(doc)
         self.stdout.write(output)
 
@@ -24,7 +26,9 @@ class InfoCommand(Command, Utils):
             ['Username', note.user.username],
             ['Project', f.format_project_name(note.project)],
             ['Name', doc.name],
-            ['Created', f.format_creation_date(doc)],
+            ['File', doc.file],
+            ['Created', f.format_date(doc.created)],
+            ['Edited', f.format_date(doc.note.modified)],
             ['Rank', note.rank],
         ])
         text = tb.TextBlock(note.text)

@@ -23,7 +23,7 @@ class InfoCommand(Command, Utils):
             ['Project', f.format_project_name(note.project)],
             ['Original', f.format_original(note)],
             ['Documents', f.format_document_list(note)],
-            ['Created', f.format_creation_date(note)],
+            ['Created', f.format_date(note.created)],
             ['Virtual tags', f.format_virtual_tags(note)],
             ['Previous notes', f.format_references(note.references)],
             ['Next notes', f.format_references(note.referencers)],

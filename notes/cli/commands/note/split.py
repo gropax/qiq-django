@@ -25,6 +25,10 @@ class SplitCommand(Command, Utils):
 
     def execute(self, args):
         note = self.find_note_by_id_or_error(args.id)
+
+        for doc in note.documents.all():
+            self.synchronize_document(doc)
+
         if args.no_project:
             proj = None
         else:
@@ -32,10 +36,10 @@ class SplitCommand(Command, Utils):
                                               create_project=args.create_project,
                                               default=note.project)
 
-        f = self.edit_note_in_editor(text=note.text, editor=args.editor)
+        keep_text = self.edit_text_in_editor(text=note.text, editor=args.editor)
 
-        with open(f, 'r') as file:
-            keep_text = file.read()
+        #with open(f, 'r') as file:
+            #keep_text = file.read()
 
         if keep_text:
             keep, new = self.split_note(proj, note, keep_text)

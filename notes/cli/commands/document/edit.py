@@ -15,14 +15,16 @@ class EditCommand(Command, Utils):
     def action(self, args):
         name_or_id = args.name_or_id
         doc = self.find_document_by_name_or_id_or_error(name_or_id)
+
+        self.synchronize_document(doc)
+
         note = doc.note
         text = note.text
-
         new_text = self.edit_text_in_editor(note.text, editor=args.editor)
 
         if text == new_text:
             self.warning_nothing_to_do()
         else:
-            note.text = new_text
-            note.save()
+            note.modify_text(new_text)
+            self.synchronize_document(doc)
             self.success_document_saved(doc)

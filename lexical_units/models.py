@@ -30,8 +30,6 @@ class LexicalUnit(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
 
-    def age(self):
-        return core.utils.age(self.created)
 
     @property
     def grammatical_category(self):
@@ -61,8 +59,6 @@ class LexicalPattern(models.Model):
     description = models.CharField(max_length=200, unique=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    def age(self):
-        return core.utils.age(self.created)
 
 
 #class LexicalFunction(models.Model):

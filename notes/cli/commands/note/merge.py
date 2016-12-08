@@ -28,6 +28,10 @@ class MergeCommand(Command, Utils):
         if not notes:
             self.error_no_match()
 
+        for note in notes:
+            for doc in note.documents.all():
+                self.synchronize_document(doc)
+
         if args.no_project:
             proj = None
         else:

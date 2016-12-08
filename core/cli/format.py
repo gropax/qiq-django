@@ -1,6 +1,29 @@
 import re
 from termblocks import TableBlock
 from notes.helpers import virtual_tags
+import pytz
+from datetime import datetime
+
+
+def format_age(date):
+    delta = datetime.now(pytz.utc) - date
+    years = delta.days // 365
+    if years:
+        return "%iy" % years
+    weeks = delta.days // 7
+    if weeks:
+        return "%iw" % weeks
+    if delta.days:
+        return "%id" % delta.days
+    hours = delta.seconds // 3600
+    if hours:
+        return "%ih" % hours
+    minutes = delta.seconds // 60
+    if minutes:
+        return "%im" % minutes
+    if delta.seconds:
+        return "%is" % delta.seconds
+    return '0s'
 
 
 def headers_data(headers):
@@ -86,8 +109,8 @@ def format_references(refs):
 def format_virtual_tags(note):
     return " ".join(tag for tag in virtual_tags(note))
 
-def format_creation_date(note):
-    return note.created.strftime("%Y-%m-%d %H:%M:%S") + " (%s)" % note.age() #note_age(note)
+def format_date(date):
+    return date.strftime("%Y-%m-%d %H:%M:%S") + " (%s)" % format_age(date) # note.age() #note_age(note)
 
 def format_project_description(proj):
     return proj.description or '-'

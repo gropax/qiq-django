@@ -1,7 +1,11 @@
+import pytz
+import sys
+import os
 import re
 import tempfile
 import subprocess
 import shlex
+import datetime
 from projects.cli import utils2 as prj
 from projects.cli.utils import Utils as Base
 from notes.models import Note, Document
@@ -208,8 +212,8 @@ class Utils(Base):
 
     # @fixme This is a helper
     #
-    def create_document(self, name, note, desc=None):
-        doc = Document(user_id=1, name=name, note=note, description=desc)
+    def create_document(self, name, note, desc=None, file=None):
+        doc = Document(user_id=1, name=name, note=note, description=desc, file=file)
         doc.save()
         return doc
 
@@ -223,3 +227,30 @@ class Utils(Base):
             return merge_notes(proj, text, notes)
         else:
             return None
+
+    def synchronize_document(self, doc):
+        if doc.file:
+            if not os.path.isfile(doc.file):
+                open(doc.file, 'a').close()  # Create empty file
+
+            mtime = pytz.utc.localize(datetime.datetime.fromtimestamp(int(os.path.getmtime(doc.file))))
+            doc_modified = doc.note.modified.replace(microsecond=0)
+
+            if doc_modified != mtime:
+                if doc_modified > mtime:
+                    with open(doc.file, 'w') as f:
+                        f.write(doc.note.text)
+
+                    from time import mktime
+                    doc_ctime = mktime(doc.created.utctimetuple())
+                    doc_mtime = mktime(doc.note.modified.utctimetuple())
+                    os.utime(doc.file, times=(doc_ctime, doc_mtime))
+
+                    sys.stdout.write("File synchronized.\n")
+                else:
+                    with open(doc.file, 'r') as f:
+                        doc.note.modify_text(f.read(), time=mtime)
+                    sys.stdout.write("Document synchronized.\n")
+
+    def absolute_path(self, path):
+        return os.path.abspath(os.path.expanduser(path))

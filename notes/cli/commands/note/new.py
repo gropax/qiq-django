@@ -39,11 +39,11 @@ class NewCommand(Command, Utils):
 
         if args.infile:
             f = args.infile.name
+            with open(f, 'r') as file:
+                text = file.read()
         else:
-            f = self.edit_note_in_editor(text=None, editor=args.editor)
+            text = self.edit_text_in_editor(text=None, editor=args.editor)
 
-        with open(f, 'r') as file:
-            text = file.read()
 
         if text:
             note = create_note(proj, text)

@@ -1,3 +1,4 @@
+import os
 from core.cli.command import Command, command
 from notes.cli.utils import Utils
 from notes.cli.commands.document import DocumentCommand
@@ -13,12 +14,14 @@ class ModifyCommand(Command, Utils):
                             help='the description of the document')
         parser.add_argument('-n', '--new-name', type=str,
                             help='the new name of the document')
+        parser.add_argument('-f', '--file', type=str,
+                            help='synchronize document with file')
 
     def action(self, args):
         name_or_id = args.name_or_id
         doc = self.find_document_by_name_or_id_or_error(name_or_id)
 
-        old_name, desc_mod = None, None
+        old_name, desc_mod, file_mod = None, None, None
 
         new_name = args.new_name
         if new_name and new_name != doc.name:
@@ -31,8 +34,18 @@ class ModifyCommand(Command, Utils):
             desc_mod = True
             doc.description = desc
 
-        if old_name or desc_mod:
+        f = self.absolute_path(args.file)
+        if f and f != doc.file:
+            if os.path.isfile(f):
+                if not self.ask('File `%s` already exists. Synchronize it anyway ?' % f, default='no'):
+                    self.warning_operation_aborted()
+
+            file_mod = True
+            doc.file = f
+            self.synchronize_document(doc)
+
+        if old_name or desc_mod or file_mod:
             doc.save()
-            self.success_document_modified(doc, old_name, desc_mod)
+            self.success_document_modified(doc, old_name, desc_mod or file_mod)
         else:
             self.warning_nothing_to_do()

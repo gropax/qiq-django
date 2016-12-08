@@ -13,5 +13,7 @@ class GetCommand(Command, Utils):
     def execute(self, args):
         doc = self.find_document_by_name_or_id_or_error(args.name_or_id)
 
+        self.synchronize_document(doc)
+
         out = self.get_note_attribute(doc.note, args.field)
         self.stdout.write(out)
