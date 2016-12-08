@@ -26,8 +26,9 @@ class NewCommand(Command, Utils):
 
         desc = args.description
 
-        f = self.absolute_path(args.file)
-        if f:
+        f = None
+        if args.file:
+            f = self.absolute_path(args.file)
             if os.path.isfile(f):
                 if not self.ask('File `%s` already exists. Synchronize it anyway ?' % f, default='no'):
                     self.warning_operation_aborted()

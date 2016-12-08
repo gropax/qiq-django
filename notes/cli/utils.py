@@ -230,10 +230,12 @@ class Utils(Base):
 
     def synchronize_document(self, doc):
         if doc.file:
-            if not os.path.isfile(doc.file):
-                open(doc.file, 'a').close()  # Create empty file
+            if os.path.isfile(doc.file):
+                timestamp = int(os.path.getmtime(doc.file))
+            else:
+                timestamp = 0
 
-            mtime = pytz.utc.localize(datetime.datetime.fromtimestamp(int(os.path.getmtime(doc.file))))
+            mtime = pytz.utc.localize(datetime.datetime.fromtimestamp(timestamp))
             doc_modified = doc.note.modified.replace(microsecond=0)
 
             if doc_modified != mtime:

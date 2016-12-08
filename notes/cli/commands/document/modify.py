@@ -34,11 +34,13 @@ class ModifyCommand(Command, Utils):
             desc_mod = True
             doc.description = desc
 
-        f = self.absolute_path(args.file)
-        if f and f != doc.file:
-            if os.path.isfile(f):
-                if not self.ask('File `%s` already exists. Synchronize it anyway ?' % f, default='no'):
-                    self.warning_operation_aborted()
+        f = None
+        if args.file:
+            f = self.absolute_path(args.file)
+            if f != doc.file:
+                if os.path.isfile(f):
+                    if not self.ask('File `%s` already exists. Synchronize it anyway ?' % f, default='no'):
+                        self.warning_operation_aborted()
 
             file_mod = True
             doc.file = f
