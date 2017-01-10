@@ -46,8 +46,15 @@ def get_by_fullname_or_id(name_or_id):
         return get_by_fullname(name_or_id)
 
 def merge(p1, p2):
+    # Copy all notes
     for note in p1.notes.all():
         note.project = p2
         note.save()
+
+    # Affect sub projects
+    for prj in p1.children.all():
+        prj.parent = p2
+        prj.save()
+
     p1.delete()
     return p2
